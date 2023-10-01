@@ -5,6 +5,30 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ApplicationIcon>Ressources\P_16.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Ressources\P.png" />
+    <None Remove="Ressources\P_16.ico" />
+    <None Remove="Ressources\P_16.png" />
+    <None Remove="Ressources\P_black.png" />
+    <None Remove="Ressources\P_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Ressources\P_16.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Ressources\lies-of-p-4k-9c.jpg" />
+    <Resource Include="Ressources\P.png" />
+    <Resource Include="Ressources\P_16.ico" />
+    <Resource Include="Ressources\P_16.png" />
+    <Resource Include="Ressources\P_black.png" />
+    <Resource Include="Ressources\P_icon.png" />
+		<Resource Include="Ressources\Sophia.jpg" />
+  </ItemGroup>
 
 </Project>
