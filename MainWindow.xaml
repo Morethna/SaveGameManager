@@ -66,7 +66,26 @@
     <TreeView x:Name="tvSavegame"
               Background="#CCFFFFFF" VerticalContentAlignment="Top"
               ScrollViewer.CanContentScroll="True" Margin="10,47,0,0" 
-              VerticalAlignment="Top" HorizontalAlignment="Left" Height="423" Width="428">
+              VerticalAlignment="Top" HorizontalAlignment="Left" Height="423" Width="428" PreviewMouseRightButtonDown="tvSavegame_PreviewMouseRightButtonDown" KeyDown="tvSavegame_KeyDown">
+      <TreeView.ContextMenu>
+        <ContextMenu>
+          <MenuItem x:Name="mtDelete" Header="Delete" Click="mtDelete_Click" Loaded="mtDelete_Loaded">
+            <MenuItem.Icon>
+              <Image Source="/Ressources/loschen.png" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem x:Name="mtRename" Header="Rename" Click="mtRename_Click">
+            <MenuItem.Icon>
+            <Image Source="/Ressources/bleistift.png" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem x:Name="mtOpenFolder" Header="Open Folder" Click="mtOpenFolder_Click">
+            <MenuItem.Icon>
+              <Image Source="/Ressources/datei-offnen.png" />
+            </MenuItem.Icon>
+          </MenuItem>
+        </ContextMenu>
+      </TreeView.ContextMenu>
       <TreeView.Resources>
         <LinearGradientBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" EndPoint="0,1" StartPoint="0,0">
           <GradientStop Color="#FFD9F4FF" Offset="0"/>
@@ -85,6 +104,9 @@
           <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
               <Setter Property="BorderBrush" Value="#adc6e5"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Background" Value="#adc6e5" />
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -110,7 +132,7 @@
         </HierarchicalDataTemplate>
       </TreeView.ItemTemplate>
     </TreeView>
-    
+
     <Button x:Name="btnImport" Background="#CCDDDDDD" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,475,0,0" Height="26" Width="69" Content="Import" Click="btnImport_Click">
       <Button.Resources>
         <Style TargetType="{x:Type Border}">
@@ -118,7 +140,7 @@
         </Style>
       </Button.Resources>
     </Button>
-    <Button x:Name="btnReplace" Background="#CCDDDDDD" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="84,475,0,0" Height="26" Width="69" Content="Replace">
+    <Button x:Name="btnReplace" Background="#CCDDDDDD" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="84,475,0,0" Height="26" Width="69" Content="Replace" Click="btnReplace_Click">
       <Button.Resources>
         <Style TargetType="{x:Type Border}">
           <Setter Property="CornerRadius" Value="5"/>

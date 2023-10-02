@@ -6,6 +6,11 @@
         xmlns:local="clr-namespace:SaveGameManager"
         mc:Ignorable="d"
         Title="Profile Configuration" Height="304" Width="621" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+  <Window.Resources>
+    <Style TargetType="Border">
+      <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+  </Window.Resources>
   <Grid>
     <Image Stretch="UniformToFill" Source="/Ressources/Sophia.jpg">
       <Image.Effect>
@@ -55,7 +60,7 @@
     </Button>
     <ListView x:Name="lvProfiles" 
       SelectedItem="{Binding SelectedListViewItem,Mode=TwoWay}"
-      SelectionMode="Single" Background="#B2FFFFFF" BorderBrush="#FF707070" Margin="5,47,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="210" Width="532">
+      SelectionMode="Single" Background="#B2FFFFFF" BorderBrush="#FF707070" Margin="5,47,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="210" Width="532" KeyDown="lvProfiles_KeyDown">
       <ListView.Resources>
         <Style TargetType="Border">
           <Setter Property="CornerRadius" Value="5"/>

@@ -45,20 +45,6 @@ namespace SaveGameManager.Handler
         LoadXml();
     }
 
-    private void RefreshProfiles()
-    {
-      _profiles.Clear();
-      foreach (XmlNode node in _document.SelectSingleNode($"*/{_profilesNode}").ChildNodes)
-      {
-        _profiles.Add(new Profile
-        {
-          Name = node.Attributes[_nameAtt].Value,
-          CreationTime = node.Attributes[_creationTimeAtt].Value,
-          Id = node.Attributes[_idAtt].Value
-        });
-      }
-    }
-
     public void SetGamefolder (string gamePath)
     {
       try
@@ -86,8 +72,8 @@ namespace SaveGameManager.Handler
         nProfile.SetAttribute(_creationTimeAtt, profile.CreationTime);
 
         node.AppendChild(nProfile);
-        RefreshProfiles();
         _document.Save(_xmlPath);
+        _profiles.Add(profile);
       }
       catch (Exception ex)
       {
@@ -104,10 +90,8 @@ namespace SaveGameManager.Handler
         if (node != null)
         {
           node.Attributes[_nameAtt].Value = profile.Name;
-          RefreshProfiles();
         }
         _document.Save(_xmlPath);
-
       }
       catch (Exception ex)
       {
@@ -125,9 +109,9 @@ namespace SaveGameManager.Handler
         {
           var parent = _document.SelectSingleNode($"*/{_profilesNode}");
           parent.RemoveChild(node);
-          RefreshProfiles();
         }
         _document.Save(_xmlPath);
+        _profiles.Remove(profile);
       }
       catch (Exception ex)
       {

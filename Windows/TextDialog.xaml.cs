@@ -25,7 +25,23 @@ namespace SaveGameManager
       txtResponse.Text = profile;
     }
     public string ResponseText { get => txtResponse.Text; set => txtResponse.Text = value; }
-    private void btnOk_Click(object sender, RoutedEventArgs e) => DialogResult = true;
+    private void btnOk_Click(object sender, RoutedEventArgs e)
+    {
+      if (string.IsNullOrEmpty(txtResponse.Text))
+      {
+        MessageBox.Show("Name can't be empty!");
+        return;
+      }
+      DialogResult = true;
+    }    
     private void btnCancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;
+
+    private void wdDialog_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter) 
+      {
+        btnOk_Click(sender, e);
+      }
+    }
   }
 }
