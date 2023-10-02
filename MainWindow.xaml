@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SaveGameManager"
         mc:Ignorable="d"
-        Title="SaveGameManager - Lies of P" Height="560" Width="464" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="SaveGameManager - Lies of P" Height="560" Width="464" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
   <Window.Resources>
     <Style TargetType="Border">
       <Setter Property="CornerRadius" Value="5"/>
@@ -66,7 +66,7 @@
     <TreeView x:Name="tvSavegame"
               Background="#CCFFFFFF" VerticalContentAlignment="Top"
               ScrollViewer.CanContentScroll="True" Margin="10,47,0,0" 
-              VerticalAlignment="Top" HorizontalAlignment="Left" Height="423" Width="428" PreviewMouseRightButtonDown="tvSavegame_PreviewMouseRightButtonDown" KeyDown="tvSavegame_KeyDown">
+              VerticalAlignment="Top" HorizontalAlignment="Left" Height="423" Width="428" PreviewMouseRightButtonDown="tvSavegame_PreviewMouseRightButtonDown" KeyDown="tvSavegame_KeyDown" MouseDoubleClick="tvSavegame_MouseDoubleClick">
       <TreeView.ContextMenu>
         <ContextMenu>
           <MenuItem x:Name="mtDelete" Header="Delete" Click="mtDelete_Click" Loaded="mtDelete_Loaded">

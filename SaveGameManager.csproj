@@ -6,13 +6,18 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
 		<UseWindowsForms>true</UseWindowsForms>
-		<ApplicationIcon>Ressources\P_16.ico</ApplicationIcon>
+		<ApplicationIcon>Ressources\P.ico</ApplicationIcon>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>true</SelfContained>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Ressources\bleistift.png" />
     <None Remove="Ressources\datei-offnen.png" />
     <None Remove="Ressources\loschen.png" />
+    <None Remove="Ressources\P.ico" />
     <None Remove="Ressources\P.png" />
     <None Remove="Ressources\P_16.ico" />
     <None Remove="Ressources\P_16.png" />
@@ -25,14 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Ressources\bleistift.png" />
     <Resource Include="Ressources\datei-offnen.png" />
     <Resource Include="Ressources\lies-of-p-4k-9c.jpg" />
     <Resource Include="Ressources\loschen.png" />
+    <Resource Include="Ressources\P.ico" />
     <Resource Include="Ressources\P.png" />
     <Resource Include="Ressources\P_16.ico" />
     <Resource Include="Ressources\P_16.png" />
