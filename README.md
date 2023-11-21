@@ -1,7 +1,7 @@
 # ![P_50](https://github.com/Morethna/SaveGameManager/assets/131201617/20275c1d-8dad-4510-a0b3-3ca9e36cc9d4) SaveGameManager
 This a tool designed to manage savegames for Lies of P.
 
-**Download:** [Latest Release](https://github.com/Morethna/SaveGameManager/assets/131201617/20275c1d-8dad-4510-a0b3-3ca9e36cc9d4)
+**Download:** [Latest Release](https://github.com/Morethna/SaveGameManager/releases)
 ## ![P_50](https://github.com/Morethna/SaveGameManager/assets/131201617/20275c1d-8dad-4510-a0b3-3ca9e36cc9d4) Features
 ![SaveGameManager - Lies of P](https://github.com/Morethna/SaveGameManager/assets/131201617/39dfa0b2-5c99-4ca8-b9c8-14e6e27e48da)
 1. Dropdown menu of all available profiles
