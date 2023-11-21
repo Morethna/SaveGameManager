@@ -19,6 +19,7 @@
 	</PropertyGroup>
 	
   <ItemGroup>
+    <None Remove="Resources\background.jpg" />
     <None Remove="Resources\bleistift.png" />
     <None Remove="Resources\d 112.png" />
     <None Remove="Resources\datei-offnen.png" />
@@ -40,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\background.jpg" />
     <Resource Include="Resources\bleistift.png" />
     <Resource Include="Resources\d 112.png" />
     <Resource Include="Resources\datei-offnen.png" />
