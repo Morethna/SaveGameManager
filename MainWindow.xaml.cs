@@ -228,7 +228,7 @@ namespace SaveGameManager
 
         var savegame = tvSavegame.SelectedItem as Savegame;
 
-        if (MessageBox.Show($"Do you really want to replace '{savegame.Name}'", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+        if (MessageBox.Show($"Do you really want to replace '{savegame.Name}'", "Replace", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
           return;
 
         _directoryHandler.ReplaceSavegame(savegame);
