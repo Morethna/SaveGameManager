@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using SaveGameManager.Handler;
 using SaveGameManager.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SaveGameManager
 {
@@ -60,30 +61,35 @@ namespace SaveGameManager
 
     private void SetProfiles()
     {
+      var profile = cboProfile.SelectedItem as Profile;
+      var profiles = cboProfile.ItemsSource as List<Profile>;
+
       cboProfile.ItemsSource = _profiles;
+
       if (_profiles != null && _profiles.Count > 0)
       {
-        cboProfile.SelectedItem = _profiles.First();
-        _directoryHandler.LoadProfile(_profiles.First());
-        tvSavegame.ItemsSource = _profiles.First().SaveGames;
+        if (string.IsNullOrEmpty(_xmlHandler.ActiveProfile))
+        {
+          var first = _profiles.First();
+          cboProfile.SelectedItem = first;
+          _xmlHandler.ChangeProfile(first.Id);
+          _directoryHandler.LoadProfile(first);
+          tvSavegame.ItemsSource = first.SaveGames;
+        }
+        else
+        {
+          var first = _profiles.Where(p => p.Id == _xmlHandler.ActiveProfile).First();
+          if (first != null)
+          {
+            if (profile == null || profile.Id != _xmlHandler.ActiveProfile)
+              cboProfile.SelectedItem = first;
+          }
+        }
       }
+
+      CollectionViewSource.GetDefaultView(cboProfile.ItemsSource).Refresh();
+      CollectionViewSource.GetDefaultView(tvSavegame.ItemsSource).Refresh();
     }
-
-    private void btnProfile_Click(object sender, RoutedEventArgs e)
-    {
-      ProfileDialog profileWindow = new ProfileDialog(_xmlHandler);
-      profileWindow.ShowDialog();
-
-      if ((cboProfile.ItemsSource == null | cboProfile.SelectedItem == null) & _profiles.Count > 0)
-      {
-        SetProfiles();
-        HandleControls(true);
-        _directoryHandler.GameFolder = _xmlHandler.GameFolder;
-        CollectionViewSource.GetDefaultView(cboProfile.ItemsSource).Refresh();
-        CollectionViewSource.GetDefaultView(tvSavegame.ItemsSource).Refresh();
-      }
-    }
-
     private void cboProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       if (cboProfile.SelectedItem == null)
@@ -96,6 +102,7 @@ namespace SaveGameManager
 
       var profile = cboProfile.SelectedItem as Profile;
       _directoryHandler.LoadProfile(profile);
+      _xmlHandler.ChangeProfile(profile.Id);
 
       if (profile != null)
         tvSavegame.ItemsSource = profile.SaveGames;
@@ -251,6 +258,28 @@ namespace SaveGameManager
     private void tvSavegame_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
       btnLoad_Click(sender, e);
+    }
+
+    private void btSettings_Click(object sender, RoutedEventArgs e)
+    {
+      cmSetting.StaysOpen = true;
+      cmSetting.IsOpen = true;
+    }
+
+    private void mtAbout_Click(object sender, RoutedEventArgs e)
+    {
+      var dialog = new About();
+      dialog.ShowDialog();
+    }
+
+    private void mtProfiles_Click(object sender, RoutedEventArgs e)
+    {
+      ProfileDialog profileWindow = new ProfileDialog(_xmlHandler);
+      profileWindow.ShowDialog();
+
+      SetProfiles();
+      HandleControls(true);
+      _directoryHandler.GameFolder = _xmlHandler.GameFolder;
     }
   }
 }

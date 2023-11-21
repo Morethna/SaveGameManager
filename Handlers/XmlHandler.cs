@@ -18,14 +18,18 @@ namespace SaveGameManager.Handler
 
     const string _creationTimeAtt = "CreationTime";
     const string _gameFolderNode = "Gamefolder";
+    const string _activeProfileNode = "ActiveProfile";
     const string _rootNode = "SaveGameManager";
     const string _profileNode = "Profile";
     const string _profilesNode = "Profiles";
 
     private List<Profile> _profiles = new List<Profile>();
     private string _gamefolder = string.Empty;
+    private string _activeProfile = string.Empty;
     private XmlDocument _document = new XmlDocument();
-    private string _xmlPath = string.Empty;
+    private string _xmlFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager/{_profileXml}";
+    private string _xmlPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager";
+
 
     public XmlHandler(List<Profile> profiles) 
     {
@@ -34,12 +38,13 @@ namespace SaveGameManager.Handler
 
     public List<Profile> Profiles { get => _profiles; } 
     public string GameFolder { get => _gamefolder; }
-
+    public string ActiveProfile { get => _activeProfile; }
     public void Init()
     {
-      _xmlPath = Path.Combine(Directory.GetCurrentDirectory(), _profileXml);
+      if (!Directory.Exists(_xmlPath))
+        Directory.CreateDirectory(_xmlPath);
 
-      if (!File.Exists(_xmlPath))
+      if (!File.Exists(_xmlFilePath))
         CreateXml();
       else
         LoadXml();
@@ -51,7 +56,7 @@ namespace SaveGameManager.Handler
       {
         var node = _document.SelectSingleNode($"*/{_gameFolderNode}");
         node.InnerText = gamePath;
-        _document.Save(_xmlPath);
+        _document.Save(_xmlFilePath);
         _gamefolder = gamePath;
       }
       catch (Exception ex)
@@ -64,16 +69,27 @@ namespace SaveGameManager.Handler
     {
       try
       {
-        var node = _document.SelectSingleNode($"*/{_profilesNode}");
+        var profileNode = _document.SelectSingleNode($"*/{_profilesNode}");
         var nProfile = _document.CreateElement(_profileNode);
+        var activeProfile = _document.SelectSingleNode($"*/{_activeProfileNode}");
+        var parent = _document.SelectSingleNode(_rootNode);
 
         nProfile.SetAttribute(_idAtt, profile.Id);
         nProfile.SetAttribute(_nameAtt, profile.Name);
         nProfile.SetAttribute(_creationTimeAtt, profile.CreationTime);
 
-        node.AppendChild(nProfile);
-        _document.Save(_xmlPath);
+        profileNode.AppendChild(nProfile);
+
+        if (activeProfile != null)
+          parent.RemoveChild(activeProfile);
+
+        var node = _document.CreateElement(_activeProfileNode); 
+        node.InnerText = profile.Id;
+        parent.AppendChild(node);
+
+        _document.Save(_xmlFilePath);
         _profiles.Add(profile);
+        _activeProfile = profile.Id;
       }
       catch (Exception ex)
       {
@@ -91,11 +107,34 @@ namespace SaveGameManager.Handler
         {
           node.Attributes[_nameAtt].Value = profile.Name;
         }
-        _document.Save(_xmlPath);
+        _document.Save(_xmlFilePath);
       }
       catch (Exception ex)
       {
         MessageBox.Show($"Something went wrong, while editing profile '{profile.Name}'.\r\n{ex.Message}");
+      }
+    }
+
+    public void ChangeProfile(string profileId)
+    {
+      try
+      {
+        var node = _document.SelectSingleNode($"*/{_activeProfileNode}");
+        var parent = _document.SelectSingleNode(_rootNode);
+
+        if (node != null)
+          parent.RemoveChild(node);
+
+        node = _document.CreateElement(_activeProfileNode);
+        node.InnerText = profileId;
+        parent.AppendChild(node);
+
+        _document.Save(_xmlFilePath);
+        _activeProfile = profileId;
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show($"Something went wrong, while changing the active profile '{profileId}'.\r\n{ex.Message}");
       }
     }
 
@@ -109,9 +148,23 @@ namespace SaveGameManager.Handler
         {
           var parent = _document.SelectSingleNode($"*/{_profilesNode}");
           parent.RemoveChild(node);
+
         }
-        _document.Save(_xmlPath);
         _profiles.Remove(profile);
+
+        if (profile.Id == _activeProfile)
+        {
+          node = _document.SelectSingleNode($"*/{_activeProfileNode}");
+
+          if (node != null && node.InnerText == _activeProfile)
+          {
+            var parent = _document.SelectSingleNode(_rootNode);
+            parent.RemoveChild(node);
+          }
+          _activeProfile = string.Empty;
+        }
+
+        _document.Save(_xmlFilePath);       
       }
       catch (Exception ex)
       {
@@ -127,14 +180,15 @@ namespace SaveGameManager.Handler
 
         var rootNode = _document.CreateElement(_rootNode);
         rootNode.AppendChild(_document.CreateElement(_gameFolderNode));
+        rootNode.AppendChild(_document.CreateElement(_activeProfileNode));
         rootNode.AppendChild(_document.CreateElement(_profilesNode));
 
         _document.AppendChild(rootNode);
-        _document.Save(_xmlPath);
+        _document.Save(_xmlFilePath);
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Something went wrong, while creating Xml '{_xmlPath}'.\r\n{ex.Message}");
+        MessageBox.Show($"Something went wrong, while creating Xml '{_xmlFilePath}'.\r\n{ex.Message}");
       }
     }
 
@@ -142,8 +196,19 @@ namespace SaveGameManager.Handler
     {
       try
       {
-        _document.Load(_xmlPath);
-        _gamefolder = _document.SelectSingleNode("*/Gamefolder").InnerText;
+        _document.Load(_xmlFilePath);
+
+        var nodeBase = _document.SelectSingleNode($"*/{_gameFolderNode}");
+
+        if (nodeBase == null)
+          throw new Exception($"\"{_gameFolderNode}\" is missing in the \"{_xmlFilePath}\" file. Add this Node manually or delete this file.");
+
+        _gamefolder = nodeBase.InnerText;
+
+        nodeBase = _document.SelectSingleNode($"*/{_activeProfileNode}");
+
+        if (nodeBase != null)
+          _activeProfile = nodeBase.InnerText;
 
         foreach (XmlNode node in _document.SelectSingleNode($"*/{_profilesNode}").ChildNodes)
         {
@@ -157,7 +222,7 @@ namespace SaveGameManager.Handler
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Something went wrong, while loading Xml '{_xmlPath}'.\r\n{ex.Message}");
+        MessageBox.Show($"Something went wrong, while loading Xml '{_xmlFilePath}'.\r\n{ex.Message}");
       }
     }
   }

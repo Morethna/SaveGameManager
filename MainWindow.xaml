@@ -1,5 +1,6 @@
 ﻿<Window x:Name="wdMain" x:Class="SaveGameManager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,14 +11,32 @@
     <Style TargetType="Border">
       <Setter Property="CornerRadius" Value="5"/>
     </Style>
+    <Style x:Key="MyButton" TargetType="Button">
+      <Setter Property="OverridesDefaultStyle" Value="True" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Name="border" BorderThickness="0" BorderBrush="Black" Background="{TemplateBinding Background}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Opacity" Value="0.8" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
   </Window.Resources>
   <Grid VerticalAlignment="Center" UseLayoutRounding="True">
-    <Image Stretch="UniformToFill" Source="/Ressources/lies-of-p-4k-9c.jpg" Margin="-291,0,0,0">
+    <Image Stretch="UniformToFill" Source="/Resources/lies-of-p-4k-9c.jpg" Margin="-291,0,0,0">
       <Image.Effect>
         <BlurEffect RenderingBias="Quality" KernelType="Gaussian" Radius="2"/>
       </Image.Effect>
     </Image>
-    <ComboBox x:Name="cboProfile" BorderThickness="1" BorderBrush="Black" Height="25" Width="314" MinWidth="285" MinHeight="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,17,0,0" SelectionChanged="cboProfile_SelectionChanged">
+    <ComboBox x:Name="cboProfile" BorderThickness="1" BorderBrush="Black" Height="25" Width="384" MinWidth="285" MinHeight="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,17,0,0" SelectionChanged="cboProfile_SelectionChanged">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Margin="2" Text="{Binding Name}"/>
@@ -54,15 +73,6 @@
         </Style>
       </ComboBox.ItemContainerStyle>
     </ComboBox>
-    <Button x:Name="btnProfile"  Click="btnProfile_Click" Background="#CCDDDDDD" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="329,17,0,0" Height="25" Width="109">
-      <Button.Resources>
-        <Style TargetType="Border">
-          <Setter Property="CornerRadius" Value="5"/>
-        </Style>
-      </Button.Resources>
-      Edit Profiles
-    </Button>
-
     <TreeView x:Name="tvSavegame"
               Background="#CCFFFFFF" VerticalContentAlignment="Top"
               ScrollViewer.CanContentScroll="True" Margin="10,47,0,0" 
@@ -71,17 +81,17 @@
         <ContextMenu>
           <MenuItem x:Name="mtDelete" Header="Delete" Click="mtDelete_Click" Loaded="mtDelete_Loaded">
             <MenuItem.Icon>
-              <Image Source="/Ressources/loschen.png" />
+              <Image Source="/Resources/loschen.png" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem x:Name="mtRename" Header="Rename" Click="mtRename_Click">
             <MenuItem.Icon>
-            <Image Source="/Ressources/bleistift.png" />
+              <Image Source="/Resources/bleistift.png" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem x:Name="mtOpenFolder" Header="Open Folder" Click="mtOpenFolder_Click">
             <MenuItem.Icon>
-              <Image Source="/Ressources/datei-offnen.png" />
+              <Image Source="/Resources/datei-offnen.png" />
             </MenuItem.Icon>
           </MenuItem>
         </ContextMenu>
@@ -126,13 +136,12 @@
       <TreeView.ItemTemplate >
         <HierarchicalDataTemplate ItemsSource="{Binding Savegame}">
           <StackPanel Orientation="Horizontal">
-            <Image Source="/Ressources/P_16.png" Margin="0,0,5,0" Stretch="Fill"/>
+            <Image Source="/Resources/P_16.png" Margin="0,0,5,0" Stretch="Fill"/>
             <TextBlock Text="{Binding Name}"/>
           </StackPanel>
         </HierarchicalDataTemplate>
       </TreeView.ItemTemplate>
     </TreeView>
-
     <Button x:Name="btnImport" Background="#CCDDDDDD" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,475,0,0" Height="26" Width="69" Content="Import" Click="btnImport_Click">
       <Button.Resources>
         <Style TargetType="{x:Type Border}">
@@ -153,6 +162,29 @@
           <Setter Property="CornerRadius" Value="5"/>
         </Style>
       </Button.Resources>
+    </Button>
+    <Button x:Name="btSettings" HorizontalAlignment="Left" 
+            VerticalAlignment="Top" Height="32" Width="39" 
+            Margin="399,14,0,0" BorderBrush="{x:Null}" 
+            Foreground="{x:Null}" Style="{StaticResource MyButton}" 
+            Click="btSettings_Click">
+      <Button.Background>
+        <ImageBrush ImageSource="/Resources/Icon-Zahnrad.png" Stretch="Uniform" TileMode="None"/>
+      </Button.Background>
+      <Button.ContextMenu>
+        <ContextMenu Name="cmSetting">
+          <MenuItem x:Name="mtAbout" Header="About" Click="mtAbout_Click">
+            <MenuItem.Icon>
+              <Image Source="/Resources/P_icon.png" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem x:Name="mtProfiles" Header="Profiles" Click="mtProfiles_Click">
+            <MenuItem.Icon>
+              <Image Source="/Resources/P_icon.png" />
+            </MenuItem.Icon>
+          </MenuItem>
+        </ContextMenu>
+      </Button.ContextMenu>
     </Button>
   </Grid>
 </Window>
