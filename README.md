@@ -32,8 +32,8 @@ Click on Import, enter a savegamename and click on Ok or press Enter
 ![Add Savegame](https://github.com/Morethna/SaveGameManager/assets/131201617/77d377b7-ea6e-4b5c-a180-937b73d35a89)
 
 > [!IMPORTANT]
-> In order to create a functional save game, it is important to save the game twice, as the save game is divided into 2 safe files.
-> It is enough to open the inventory twice to trigger the saving process
+> In order to create a functional save game it is important to save twice, because the save game is splitted in 2 seperated files.
+> It is enough to open the inventory to trigger the saving process
 > The saving process is completed when the saving icon disappears
 > 
 > ![image](https://github.com/Morethna/SaveGameManager/assets/131201617/dc48689d-a871-4bd9-b146-c304cdbed0c3)
