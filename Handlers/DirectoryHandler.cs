@@ -25,6 +25,17 @@ namespace SaveGameManager.Handler
       }
     }
 
+        private void CleanUpSavegame(string folder)
+        {
+            if (Directory.Exists(folder))
+            {
+                foreach (var filename in Directory.GetFiles(folder))
+                {
+                    File.Delete(filename);
+                }
+            }
+        }
+
     public void DeleteProfilePath(Profile profile)
     {
       try
@@ -88,6 +99,7 @@ namespace SaveGameManager.Handler
     {
       try
       {
+                CleanUpSavegame(_gameFolder);
         if (Directory.Exists(savegame.Path))
         {
           foreach (var filename in Directory.GetFiles(savegame.Path))
@@ -154,11 +166,12 @@ namespace SaveGameManager.Handler
     {
       try
       {
+                CleanUpSavegame(savegame.Path);
         if (Directory.Exists(savegame.Path))
         {
           foreach (var filename in Directory.GetFiles(_gameFolder))
           {
-            var dstFilename = Path.Combine(savegame.Path, filename.Replace(_gameFolder, savegame.Path));
+                        var dstFilename = filename.Replace(_gameFolder, savegame.Path);
             File.Copy(filename, dstFilename, true);
           }
         }
