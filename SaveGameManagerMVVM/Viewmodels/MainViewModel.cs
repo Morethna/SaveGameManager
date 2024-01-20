@@ -19,12 +19,14 @@ namespace SaveGameManagerMVVM.Viewmodels
     {
         private readonly IDataService _dataService;
         private ISettingsService _settingsService;
+        private readonly IDirectoryService _directoryService;
         private static Random random = new Random();
 
-        public MainViewModel(IDataService dataService, ISettingsService settingsService)
+        public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService)
         {
             _dataService = dataService;
             _settingsService = settingsService;
+            _directoryService = directoryService;
         }
 
         public Profile SelectedProfile
@@ -36,9 +38,11 @@ namespace SaveGameManagerMVVM.Viewmodels
                     return;
 
                 _dataService.SelectedProfile = value;
+                _directoryService.LoadProfile(SelectedProfile);
                 OnPropertyChanged(nameof(SelectedProfile));
             }
         }
+        public Config Config { get => _dataService.Config; }
 
         public ISettingsService SettingsService
         {
@@ -88,23 +92,7 @@ namespace SaveGameManagerMVVM.Viewmodels
         //        }
         //    }
         //}
-        //private void cboProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (cboProfile.SelectedItem == null)
-        //    {
-        //        CollectionViewSource.GetDefaultView(cboProfile.ItemsSource).Refresh();
-        //        tvSavegame.ItemsSource = new List<Savegame>();
-        //        CollectionViewSource.GetDefaultView(tvSavegame.ItemsSource).Refresh();
-        //        return;
-        //    }
 
-        //    var profile = cboProfile.SelectedItem as Profile;
-        //    _directoryHandler.LoadProfile(profile);
-        //    _xmlHandler.ChangeProfile(profile.Id);
-
-        //    if (profile != null)
-        //        tvSavegame.ItemsSource = profile.SaveGames;
-        //}
 
         //private void ImportSaveGame()
         //{

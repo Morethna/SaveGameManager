@@ -3,24 +3,24 @@ using SaveGameManagerMVVM.Interfaces;
 using System;
 using System.IO;
 using System.Linq;
-using System.Windows;
+using System.Windows.Forms;
 
 namespace SaveGameManager.Handler
 {
     public class DirectoryService : IDirectoryService
     {
-        private string _gameFolder;
-        private string _saveGameFolder;
-        private readonly IDataService _dataService;
+        private string _gameFolder = string.Empty;
 
         #region ctor
-        public DirectoryService(IDataService dataService)
-        {
-            _dataService = dataService;
-            _gameFolder = _dataService.Config.Gamepath;
-            _saveGameFolder = Path.Combine(_gameFolder, "SaveGameManager");
-            CleanUpData();
-        }
+        public DirectoryService(){}
+        #endregion
+
+        #region public properties
+        public string GameFolder { get => _gameFolder; set => _gameFolder = value; }
+        #endregion
+
+        #region private properties
+        private string SaveGameFolder { get => Path.Combine(_gameFolder, "SaveGameManager"); }
         #endregion
 
         #region private methode
@@ -35,25 +35,6 @@ namespace SaveGameManager.Handler
             }
         }
 
-        private void CleanUpData()
-        {
-            if (string.IsNullOrEmpty(_gameFolder) || !Directory.Exists(_gameFolder))
-                return;
-
-            foreach (var p in _dataService.Config.Profiles)
-            {
-                if (Directory.Exists(Path.Combine(_saveGameFolder, p.Id)))
-                {
-                    foreach (var sg in p.SaveGames)
-                    {
-                        if (!Directory.Exists(sg.Path))
-                            p.SaveGames.Remove(sg);
-                    }
-                }
-                else
-                    _dataService.Config.Profiles.Remove(p);
-            }
-        }
         #endregion
 
         #region public methods
@@ -61,7 +42,7 @@ namespace SaveGameManager.Handler
         {
             try
             {
-                var path = Path.Combine(_saveGameFolder, profile.Id);
+                var path = Path.Combine(SaveGameFolder, profile.Id);
                 if (Directory.Exists(path))
                 {
                     foreach (var sg in profile.SaveGames)
@@ -79,7 +60,7 @@ namespace SaveGameManager.Handler
         {
             try
             {
-                var saveGamePath = Path.Combine(_saveGameFolder, profile.Id, name);
+                var saveGamePath = Path.Combine(SaveGameFolder, profile.Id, name);
 
                 Directory.CreateDirectory(saveGamePath);
 
@@ -161,7 +142,7 @@ namespace SaveGameManager.Handler
         {
             try
             {
-                var saveGamePath = Path.Combine(_saveGameFolder, profile.Id);
+                var saveGamePath = Path.Combine(SaveGameFolder, profile.Id);
                 if (Directory.Exists(saveGamePath))
                 {
                     foreach (string d in Directory.GetDirectories(saveGamePath))

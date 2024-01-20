@@ -59,8 +59,9 @@
               BorderBrush="Black"
               Height="25"
               MinHeight="25" 
-              Margin="10,5,0,0">
-      <!--SelectionChanged="cboProfile_SelectionChanged">-->
+              Margin="10,5,0,0"
+              SelectedItem= "{Binding SelectedProfile}"
+              ItemsSource="{Binding Config.Profiles}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Margin="2" Text="{Binding Name}"/>
@@ -130,7 +131,8 @@
               Grid.ColumnSpan="2"
               Background="#CCFFFFFF"
               ScrollViewer.CanContentScroll="True"
-              Margin="10,0,10,0">
+              Margin="10,0,10,0"
+              ItemsSource="{Binding SelectedProfile.SaveGames}">
       <!--PreviewMouseRightButtonDown="tvSavegame_PreviewMouseRightButtonDown"
                 KeyDown="tvSavegame_KeyDown"
                 MouseDoubleClick="tvSavegame_MouseDoubleClick">-->
@@ -198,7 +200,7 @@
         </Style>
       </TreeView.ItemContainerStyle>
       <TreeView.ItemTemplate >
-        <HierarchicalDataTemplate ItemsSource="{Binding Savegame}">
+        <HierarchicalDataTemplate ItemsSource="{Binding SelectedProfile.SaveGames}">
           <StackPanel Orientation="Horizontal">
             <Image Source="/Resources/P_16.png" Margin="0,0,5,0" Stretch="Fill"/>
             <TextBlock Text="{Binding Name}"/>

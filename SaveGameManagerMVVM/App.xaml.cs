@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SaveGameManager.Handler;
 using SaveGameManagerMVVM.Interfaces;
 using SaveGameManagerMVVM.Services;
@@ -23,6 +22,7 @@ namespace SaveGameManagerMVVM
 
             services.AddSingleton<IDataService, DataService>();
             services.AddSingleton<IDirectoryService, DirectoryService>();
+            services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<MainViewModel>();
 
             services.AddSingleton(sp => new MainWindow()
@@ -38,6 +38,12 @@ namespace SaveGameManagerMVVM
             var startForm = _serviceProvider.GetRequiredService<MainWindow>();
             startForm.Show();
             base.OnStartup(e);
+        }
+        protected override void OnExit(ExitEventArgs e)
+        {
+            var startForm = _serviceProvider.GetRequiredService<IDataService>();
+            startForm.SaveConfigAsync();
+            base.OnExit(e);
         }
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {

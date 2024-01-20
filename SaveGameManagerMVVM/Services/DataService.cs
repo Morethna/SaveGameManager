@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 
 namespace SaveGameManagerMVVM.Services;
-public class DataService : OberservableObject, IDataService
+public class DataService : IDataService
 {
     private Config _config = new Config();
     private Profile _selectedProfile = new Profile();
@@ -21,8 +21,8 @@ public class DataService : OberservableObject, IDataService
     #region ctor
     public DataService(IDirectoryService directoryService)
     {
-        InitConfig();
         _directoryService = directoryService;
+        InitConfig();  
     }
     #endregion
 
@@ -31,19 +31,12 @@ public class DataService : OberservableObject, IDataService
         get => _selectedProfile;
         set
         {
-            if (_selectedProfile == value)
-                return;
-
             _selectedProfile = value;
             Config.ActiveProfile = _selectedProfile.Id;
-            OnPropertyChanged(nameof(SelectedProfile));
         }
     }
 
-    public Config Config
-    {
-        get => _config;
-    }
+    public Config Config { get => _config; }
 
     #region internal methods
     internal void InitConfig()
@@ -66,23 +59,15 @@ public class DataService : OberservableObject, IDataService
             }
 
             var text = File.ReadAllText(_filePath);
-            var configBase = JsonConvert.DeserializeObject<ConfigBase>(text) ?? new ConfigBase();
+            _config = JsonConvert.DeserializeObject<Config>(text) ?? new Config();
 
-            _config = new Config 
-            {
-                Gamepath = configBase.Gamepath,
-                ActiveProfile = configBase.ActiveProfile
-            };
+            _selectedProfile = _config.Profiles.Where(p => p.Id == _config.ActiveProfile).First();
 
-            configBase.Profiles.ForEach(p =>
-            {
-                _config.Profiles.Add(new Profile
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    CreationTime = p.CreationTime
-                });
-            });
+            if (string.IsNullOrWhiteSpace(_config.Gamepath))
+                return;
+
+            _directoryService.GameFolder = _config.Gamepath;
+            _directoryService.LoadProfile(_selectedProfile);
         }
         catch (Exception ex)
         {
