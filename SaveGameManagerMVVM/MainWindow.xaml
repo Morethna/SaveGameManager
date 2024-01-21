@@ -144,22 +144,21 @@
         <ContextMenu>
           <MenuItem x:Name="mtDelete"
                     Header="Delete"
-                    Command="{Binding DeleteSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
-                    CommandParameter="">
+                    Command="{Binding DeleteSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/loschen.png" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem x:Name="mtRename" 
-                      Header="Rename" >
-            <!--Click="mtRename_Click">-->
+                    Header="Rename"
+                    Command="{Binding OpenTextDialogCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/bleistift.png" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem x:Name="mtOpenFolder" 
-                      Header="Open Folder" >
-            <!--Click="mtOpenFolder_Click">-->
+                    Header="Open Folder"
+                    Command="{Binding DeleteSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/datei-offnen.png" />
             </MenuItem.Icon>

@@ -35,7 +35,7 @@ public class DataService : IDataService
             Config.ActiveProfile = _selectedProfile.Id;
         }
     }
-
+    public Savegame? SelectedSaveGame { get; set; }
     public Config Config { get => _config; }
 
     #region internal methods

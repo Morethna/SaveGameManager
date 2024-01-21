@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace SaveGameManager.Handler
 {
@@ -189,6 +190,23 @@ namespace SaveGameManager.Handler
             catch (Exception ex)
             {
                 MessageBox.Show($"Something went wrong, while replace savegame '{savegame.Name}'.\r\n{ex.Message}");
+            }
+        }
+        public void OpenSaveGame(Savegame savegame)
+        {
+            try
+            {
+                if (!Directory.Exists(savegame.Path))
+                {
+                    MessageBox.Show($"Savegame doesn't exist on the filesystem'. Path: \"{savegame.Path}\"");
+                    return;
+                }
+
+                Process.Start("explorer.exe", savegame.Path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Something went wrong, while trying to add a profile to select the gamefolder'.\r\n{ex.Message}");
             }
         }
         #endregion

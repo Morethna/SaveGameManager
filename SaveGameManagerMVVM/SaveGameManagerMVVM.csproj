@@ -73,6 +73,9 @@
 	  <AutoGen>True</AutoGen>
 	  <DependentUpon>Hyperlinks.resx</DependentUpon>
 	</Compile>
+	<Compile Update="Views\TextDialog.xaml.cs">
+	  <SubType>Code</SubType>
+	</Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -80,10 +83,6 @@
 	  <Generator>ResXFileCodeGenerator</Generator>
 	  <LastGenOutput>Hyperlinks.Designer.cs</LastGenOutput>
 	</EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\" />
   </ItemGroup>
 
 </Project>

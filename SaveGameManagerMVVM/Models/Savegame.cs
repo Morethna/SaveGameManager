@@ -1,6 +1,32 @@
-﻿namespace SaveGameManagerMVVM.Models;
-public class Savegame
+﻿using SaveGameManagerMVVM.Core;
+
+namespace SaveGameManagerMVVM.Models;
+public class Savegame : OberservableObject
 {
-    public string Name { get; set; } = string.Empty;
-    public string Path { get; set; } = string.Empty;
+    private string _name = string.Empty;
+    private string _path = string.Empty;
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            if (_name == value)
+                return;
+
+            _name = value;
+            OnPropertyChanged(nameof(Name));
+        }
+    }
+    public string Path
+    {
+        get => _path;
+        set
+        {
+            if (_path == value)
+                return;
+
+            _path = value;
+            OnPropertyChanged(nameof(Path));
+        }
+    }
 }

@@ -4,34 +4,53 @@ using System.Windows.Data;
 using System.Windows;
 using SaveGameManagerMVVM.Models;
 using System.Windows.Input;
+using SaveGameManagerMVVM.Views;
 
 namespace SaveGameManagerMVVM.Viewmodels
 {
-    public class MainViewModel : OberservableObject
+    public class MainViewModel : ViewModelBase
     {
         private readonly IDataService _dataService;
         private ISettingsService _settingsService;
         private readonly IDirectoryService _directoryService;
+        private readonly IWindowService _windowService;
+        private readonly TextDialogViewModel _textDialog;
 
-        public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService)
+        public MainViewModel(IDataService dataService,
+            ISettingsService settingsService,
+            IDirectoryService directoryService,
+            IWindowService windowService,
+            TextDialogViewModel textDialog)
         {
             _dataService = dataService;
             _settingsService = settingsService;
             _directoryService = directoryService;
+            _windowService = windowService;
+            _textDialog = textDialog;
+
             CreateSaveGameCommand = new DelegateCommand(ImportSaveGame);
             DeleteSaveGameCommand = new DelegateCommand(DeleteSaveGame);
             SelectedItemChangedCommand = new DelegateCommand(SelectedItemChanged);
+            OpenSaveGameCommand = new DelegateCommand(OpenSaveGame);
+            OpenTextDialogCommand = new DelegateCommand(OpenTextDialog);
         }
+
+        public Savegame? SelectedSaveGame 
+        { 
+            get => _dataService.SelectedSaveGame; 
+            set => _dataService.SelectedSaveGame = value; 
+        }
+
         public ICommand CreateSaveGameCommand { get; set; }
         public ICommand DeleteSaveGameCommand { get; set; }
         public ICommand SelectedItemChangedCommand { get; set; }
-
-        private void SelectedItemChanged(object args) => SelectedSaveGame = (Savegame)args;
+        public ICommand OpenSaveGameCommand { get; set; }
+        public ICommand OpenTextDialogCommand { get; set; }
 
         public Profile SelectedProfile
         {
             get => _dataService.SelectedProfile;
-            set 
+            set
             {
                 if (_dataService.SelectedProfile == value)
                     return;
@@ -41,11 +60,7 @@ namespace SaveGameManagerMVVM.Viewmodels
                 OnPropertyChanged(nameof(SelectedProfile));
             }
         }
-
-        private Savegame SelectedSaveGame { get; set; }
-
         public Config Config { get => _dataService.Config; }
-
         public ISettingsService SettingsService
         {
             get => _settingsService;
@@ -59,11 +74,24 @@ namespace SaveGameManagerMVVM.Viewmodels
             }
         }
 
+        private void SelectedItemChanged(object obj) => SelectedSaveGame = (Savegame)obj;
         private void ImportSaveGame(object obj) => _directoryService.CreateSaveGame(SelectedProfile);
         private void DeleteSaveGame(object obj)
         {
-            _directoryService.DeleteSaveGame(SelectedSaveGame);
-            SelectedProfile.SaveGames.Remove(SelectedSaveGame);
+            if (SelectedSaveGame != null)
+            {
+                _directoryService.DeleteSaveGame(SelectedSaveGame);
+                SelectedProfile.SaveGames.Remove(SelectedSaveGame);
+            }
+        }
+        private void OpenSaveGame(object obj)
+        {
+            if (SelectedSaveGame != null) 
+                _directoryService.OpenSaveGame(SelectedSaveGame);
+        }
+        private void OpenTextDialog(object obj)
+        {
+            _windowService.OpenWindow<TextDialog>(_textDialog, Application.Current.MainWindow);
         }
 
 
@@ -112,18 +140,6 @@ namespace SaveGameManagerMVVM.Viewmodels
         //    _directoryHandler.LoadSaveGame(savegame);
 
         //    MessageBox.Show($"Savefile '{savegame.Name}' loaded.");
-        //}
-
-
-        //private void tvSavegame_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    TreeViewItem treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
-
-        //    if (treeViewItem != null)
-        //    {
-        //        treeViewItem.Focus();
-        //        e.Handled = true;
-        //    }
         //}
 
         //private void mtDelete_Click(object sender, RoutedEventArgs e)
