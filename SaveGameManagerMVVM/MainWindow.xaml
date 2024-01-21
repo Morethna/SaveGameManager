@@ -132,16 +132,20 @@
               Background="#CCFFFFFF"
               ScrollViewer.CanContentScroll="True"
               Margin="10,0,10,0"
-              ItemsSource="{Binding SelectedProfile.SaveGames}">
-      <!--PreviewMouseRightButtonDown="tvSavegame_PreviewMouseRightButtonDown"
-                KeyDown="tvSavegame_KeyDown"
-                MouseDoubleClick="tvSavegame_MouseDoubleClick">-->
+              ItemsSource="{Binding SelectedProfile.SaveGames}"
+              PreviewMouseRightButtonDown="tvSavegame_PreviewMouseRightButtonDown">
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="SelectedItemChanged">
+          <b:InvokeCommandAction Command="{Binding SelectedItemChangedCommand}"
+                                 CommandParameter="{Binding ElementName=tvSavegame, Path=SelectedItem}"/>
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
       <TreeView.ContextMenu>
         <ContextMenu>
           <MenuItem x:Name="mtDelete"
-                      Header="Delete">
-            <!--Click="mtDelete_Click"
-                      Loaded="mtDelete_Loaded">-->
+                    Header="Delete"
+                    Command="{Binding DeleteSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
+                    CommandParameter="">
             <MenuItem.Icon>
               <Image Source="/Resources/loschen.png" />
             </MenuItem.Icon>
@@ -192,15 +196,10 @@
               <Setter Property="BorderBrush" Value="LightGray"/>
             </MultiTrigger>
           </Style.Triggers>
-          <Style.Resources>
-            <Style TargetType="Border">
-              <Setter Property="CornerRadius" Value="2"/>
-            </Style>
-          </Style.Resources>
         </Style>
       </TreeView.ItemContainerStyle>
-      <TreeView.ItemTemplate >
-        <HierarchicalDataTemplate ItemsSource="{Binding SelectedProfile.SaveGames}">
+      <TreeView.ItemTemplate>
+        <HierarchicalDataTemplate>
           <StackPanel Orientation="Horizontal">
             <Image Source="/Resources/P_16.png" Margin="0,0,5,0" Stretch="Fill"/>
             <TextBlock Text="{Binding Name}"/>
@@ -212,10 +211,10 @@
                 Grid.Row="3" Grid.ColumnSpan="2"
                 Margin="10,5,0,0">
       <Button x:Name="btnImport"
-                Background="#CCDDDDDD"
-                Height="26" Width="69"
-                Content="Import" FontSize="14">
-        <!--Click="btnImport_Click">-->
+              Background="#CCDDDDDD"
+              Height="26" Width="69"
+              Content="Import" FontSize="14"
+              Command="{Binding CreateSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>

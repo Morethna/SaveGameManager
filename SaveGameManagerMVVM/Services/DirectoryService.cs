@@ -10,6 +10,7 @@ namespace SaveGameManager.Handler
     public class DirectoryService : IDirectoryService
     {
         private string _gameFolder = string.Empty;
+        private static Random random = new Random();
 
         #region ctor
         public DirectoryService(){}
@@ -35,6 +36,13 @@ namespace SaveGameManager.Handler
             }
         }
 
+        private static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
         #endregion
 
         #region public methods
@@ -56,12 +64,18 @@ namespace SaveGameManager.Handler
                 MessageBox.Show($"Something went wrong, while trying to delete profile '{profile.Name}' on the filesystem.\r\n{ex.Message}");
             }
         }
-        public void CreateSaveGameFolder(Profile profile, string name)
+        public void CreateSaveGame(Profile profile)
         {
+            var name = RandomString(8);
             try
             {
+                if (string.IsNullOrEmpty(_gameFolder))
+                {
+                    MessageBox.Show("Select a gamefolder, please");
+                    return;
+                }    
+                
                 var saveGamePath = Path.Combine(SaveGameFolder, profile.Id, name);
-
                 Directory.CreateDirectory(saveGamePath);
 
                 foreach (var filename in Directory.GetFiles(_gameFolder))

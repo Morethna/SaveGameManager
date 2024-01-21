@@ -1,17 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using SaveGameManagerMVVM.Core;
+﻿using SaveGameManagerMVVM.Core;
 using SaveGameManagerMVVM.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows;
 using SaveGameManagerMVVM.Models;
+using System.Windows.Input;
 
 namespace SaveGameManagerMVVM.Viewmodels
 {
@@ -20,14 +12,21 @@ namespace SaveGameManagerMVVM.Viewmodels
         private readonly IDataService _dataService;
         private ISettingsService _settingsService;
         private readonly IDirectoryService _directoryService;
-        private static Random random = new Random();
 
         public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService)
         {
             _dataService = dataService;
             _settingsService = settingsService;
             _directoryService = directoryService;
+            CreateSaveGameCommand = new DelegateCommand(ImportSaveGame);
+            DeleteSaveGameCommand = new DelegateCommand(DeleteSaveGame);
+            SelectedItemChangedCommand = new DelegateCommand(SelectedItemChanged);
         }
+        public ICommand CreateSaveGameCommand { get; set; }
+        public ICommand DeleteSaveGameCommand { get; set; }
+        public ICommand SelectedItemChangedCommand { get; set; }
+
+        private void SelectedItemChanged(object args) => SelectedSaveGame = (Savegame)args;
 
         public Profile SelectedProfile
         {
@@ -42,6 +41,9 @@ namespace SaveGameManagerMVVM.Viewmodels
                 OnPropertyChanged(nameof(SelectedProfile));
             }
         }
+
+        private Savegame SelectedSaveGame { get; set; }
+
         public Config Config { get => _dataService.Config; }
 
         public ISettingsService SettingsService
@@ -57,12 +59,13 @@ namespace SaveGameManagerMVVM.Viewmodels
             }
         }
 
-        private static string RandomString(int length)
+        private void ImportSaveGame(object obj) => _directoryService.CreateSaveGame(SelectedProfile);
+        private void DeleteSaveGame(object obj)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+            _directoryService.DeleteSaveGame(SelectedSaveGame);
+            SelectedProfile.SaveGames.Remove(SelectedSaveGame);
         }
+
 
         //private void SetProfiles()
         //{
@@ -90,29 +93,6 @@ namespace SaveGameManagerMVVM.Viewmodels
         //                    cboProfile.SelectedItem = first;
         //            }
         //        }
-        //    }
-        //}
-
-
-        //private void ImportSaveGame()
-        //{
-        //    if (string.IsNullOrEmpty(_xmlHandler.GameFolder))
-        //    {
-        //        MessageBox.Show("Select a gamefolder, please");
-        //        return;
-        //    }
-        //    if (cboProfile.SelectedItem == null)
-        //    {
-        //        MessageBox.Show("Select a profile, please");
-        //        return;
-        //    }
-        //    var dialog = new TextDialog($"savegame_{RandomString(8)}");
-        //    if (dialog.ShowDialog() == true)
-        //    {
-        //        var profile = cboProfile.SelectedItem as Profile;
-        //        _directoryHandler.CreateSaveGameFolder(profile, dialog.txtResponse.Text);
-
-        //        CollectionViewSource.GetDefaultView(tvSavegame.ItemsSource).Refresh();
         //    }
         //}
 
