@@ -31,4 +31,9 @@ public partial class MainWindow : Window
             e.Handled = true;
         }
     }
+    private void btSettings_Click(object sender, RoutedEventArgs e)
+    {
+        cmSetting.StaysOpen = true;
+        cmSetting.IsOpen = true;
+    }
 }

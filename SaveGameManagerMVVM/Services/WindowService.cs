@@ -1,29 +1,43 @@
 ﻿using SaveGameManagerMVVM.Interfaces;
 using SaveGameManagerMVVM.Viewmodels;
+using SaveGameManagerMVVM.Views;
+using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms.Design;
 
 namespace SaveGameManagerMVVM.Services;
 
 public class WindowService : IWindowService
 {
-    public WindowService(){}
-
-    public void OpenWindow<T>(ViewModelBase viewModel, Window parent)
-        where T: Window, new()
+    public WindowService()
     {
-        T window = new T();
+        
+    }
+
+    public void OpenWindow(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
+    {
+        var window = GetView(win);
+        ArgumentNullException.ThrowIfNull(window, nameof(window));
         window.DataContext = viewModel;
-        window.Owner = parent;
+        window.Owner = GetView(parent, true);
         window.ShowDialog();
     }
 
-    public void CloseWindow<T>()
-        where T : Window, new()
+    public void CloseWindow(IWindowService.Windows win)
     {
-        var window = Application.Current.Windows.OfType<T>().FirstOrDefault(x =>x.IsActive);
-
-        if (window != null)
-            window.Close();
+        var window = GetView(win, true);
+        window?.Close();
     }
+
+    internal static Window? GetViewInstance<T>() where T : Window, new() => Application.Current.Windows.OfType<T>().FirstOrDefault(x => x.IsActive);
+    internal static Window? GetView(IWindowService.Windows windows, bool open = false) => windows switch
+    {
+
+        IWindowService.Windows.Textdialog => open ? GetViewInstance<TextDialog>() : new TextDialog(),
+        IWindowService.Windows.About => open ? GetViewInstance<About>() : new About(),
+        IWindowService.Windows.ProfileDialog => open ? GetViewInstance<ProfileDialog>() : new ProfileDialog(),
+        IWindowService.Windows.MainWindow => GetViewInstance<MainWindow>(),
+        _ => throw new NotImplementedException()
+    };
 }

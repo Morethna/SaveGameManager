@@ -21,6 +21,7 @@
   <ItemGroup>
 	<None Remove="Resources\background.jpg" />
 	<None Remove="Resources\bleistift.png" />
+	<None Remove="Resources\cogwheel.png" />
 	<None Remove="Resources\d 112.png" />
 	<None Remove="Resources\datei-offnen.png" />
 	<None Remove="Resources\discord.png" />
@@ -44,16 +45,17 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
 	<Resource Include="Resources\background.jpg" />
 	<Resource Include="Resources\bleistift.png" />
+	<Resource Include="Resources\cogwheel.png" />
 	<Resource Include="Resources\d 112.png" />
 	<Resource Include="Resources\datei-offnen.png" />
 	<Resource Include="Resources\discord.png" />
-	<Resource Include="Resources\Icon-Zahnrad.png" />
 	<Resource Include="Resources\lies-of-p-4k-9c.jpg" />
 	<Resource Include="Resources\loschen.png" />
 	<Resource Include="Resources\P.ico" />
@@ -65,17 +67,6 @@
 	<Resource Include="Resources\Sophia.jpg" />
 	<Resource Include="Resources\Twitch.png" />
 	<Resource Include="Resources\ytub_icon.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-	<Compile Update="Resources\Hyperlinks.Designer.cs">
-	  <DesignTime>True</DesignTime>
-	  <AutoGen>True</AutoGen>
-	  <DependentUpon>Hyperlinks.resx</DependentUpon>
-	</Compile>
-	<Compile Update="Views\TextDialog.xaml.cs">
-	  <SubType>Code</SubType>
-	</Compile>
   </ItemGroup>
 
   <ItemGroup>

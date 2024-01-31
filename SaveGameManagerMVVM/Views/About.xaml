@@ -1,0 +1,90 @@
+﻿<Window x:Name="wdAbout" x:Class="SaveGameManagerMVVM.Views.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:local="clr-namespace:SaveGameManagerMVVM.Views"
+        mc:Ignorable="d"
+        Title="About SaveGameManager" Height="145" Width="350" 
+        ResizeMode="NoResize" 
+        WindowStartupLocation="CenterScreen"
+        ui:WindowHelper.UseModernWindowStyle="True">
+  <Window.Resources>
+    <Style x:Key="MyButton" TargetType="Button">
+      <Setter Property="OverridesDefaultStyle" Value="True" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border Name="border" BorderThickness="0" BorderBrush="Black" Background="{TemplateBinding Background}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Opacity" Value="0.8" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="33*"/>
+      <RowDefinition Height="33*"/>
+      <RowDefinition Height="33*"/>
+    </Grid.RowDefinitions>
+    <Image Grid.RowSpan="3"
+           Stretch="UniformToFill" 
+           Source="/Resources/background.jpg">
+      <Image.Effect>
+        <BlurEffect RenderingBias="Quality" KernelType="Gaussian" Radius="4"/>
+      </Image.Effect>
+    </Image>
+    <Label x:Name="lblVersion"
+           Margin="5,0,0,0"
+           Grid.Row="0"
+           Foreground="White"
+           FontSize="20"
+           Content="Version:  1.0.0">
+    </Label>
+    <StackPanel Orientation="Horizontal" Grid.Row="1">
+      <Button x:Name="btnYtub" Height="34" Width="34"
+              Margin="5,0,0,0"
+              BorderBrush="{x:Null}" 
+              Foreground="{x:Null}"
+              Style="{StaticResource MyButton}">
+        <Button.Background>
+          <ImageBrush ImageSource="/Resources/ytub_icon.png" Stretch="UniformToFill" TileMode="None"/>
+        </Button.Background>
+      </Button>
+      <Button x:Name="btnTwitch" 
+              Margin="5,0,0,0"
+              Height="34" Width="34" BorderBrush="{x:Null}" 
+              Foreground="{x:Null}" Style="{StaticResource MyButton}">
+        <Button.Background>
+          <ImageBrush ImageSource="/Resources/Twitch.png" Stretch="UniformToFill" TileMode="None"/>
+        </Button.Background>
+      </Button>
+      <Button x:Name="btnDiscord" Height="34" Width="34"
+              Margin="5,0,0,0"
+              BorderBrush="{x:Null}"
+              Foreground="{x:Null}" Style="{StaticResource MyButton}">
+        <Button.Background>
+          <ImageBrush ImageSource="/Resources/discord.png" Stretch="UniformToFill" TileMode="None"/>
+        </Button.Background>
+      </Button>
+    </StackPanel>
+    <Label x:Name="lblAutorTitle" 
+           Margin="5,0,0,0"
+           Grid.Row="2"
+           Foreground="white" 
+           FontSize="20"
+           Content="Developed by Morethna"/>
+    <Image Source="/Resources/d 112.png" 
+           Grid.RowSpan="3"
+           HorizontalAlignment="Right"/>
+  </Grid>
+</Window>

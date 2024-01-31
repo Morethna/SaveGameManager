@@ -14,14 +14,12 @@ public class DataService : IDataService
     private Profile _selectedProfile = new Profile();
     private string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager/profile.json";
     private string _path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager";
-    private readonly IDirectoryService _directoryService;
 
     //private readonly ILogger<DataService> //_logger;
 
     #region ctor
-    public DataService(IDirectoryService directoryService)
+    public DataService()
     {
-        _directoryService = directoryService;
         InitConfig();  
     }
     #endregion
@@ -65,9 +63,6 @@ public class DataService : IDataService
 
             if (string.IsNullOrWhiteSpace(_config.Gamepath))
                 return;
-
-            _directoryService.GameFolder = _config.Gamepath;
-            _directoryService.LoadProfile(_selectedProfile);
         }
         catch (Exception ex)
         {

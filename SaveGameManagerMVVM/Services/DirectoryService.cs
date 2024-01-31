@@ -10,19 +10,19 @@ namespace SaveGameManager.Handler
 {
     public class DirectoryService : IDirectoryService
     {
-        private string _gameFolder = string.Empty;
         private static Random random = new Random();
+        private readonly IDataService _dataService;
 
         #region ctor
-        public DirectoryService(){}
-        #endregion
-
-        #region public properties
-        public string GameFolder { get => _gameFolder; set => _gameFolder = value; }
+        public DirectoryService(IDataService dataService)
+        {
+            _dataService = dataService;
+        }
         #endregion
 
         #region private properties
-        private string SaveGameFolder { get => Path.Combine(_gameFolder, "SaveGameManager"); }
+        private string SaveGameFolder { get => Path.Combine(GameFolder, "SaveGameManager"); }
+        private string GameFolder { get => _dataService.Config.Gamepath; }
         #endregion
 
         #region private methode
@@ -70,7 +70,7 @@ namespace SaveGameManager.Handler
             var name = RandomString(8);
             try
             {
-                if (string.IsNullOrEmpty(_gameFolder))
+                if (string.IsNullOrEmpty(GameFolder))
                 {
                     MessageBox.Show("Select a gamefolder, please");
                     return;
@@ -79,9 +79,9 @@ namespace SaveGameManager.Handler
                 var saveGamePath = Path.Combine(SaveGameFolder, profile.Id, name);
                 Directory.CreateDirectory(saveGamePath);
 
-                foreach (var filename in Directory.GetFiles(_gameFolder))
+                foreach (var filename in Directory.GetFiles(GameFolder))
                 {
-                    var dstFilename = Path.Combine(saveGamePath, filename.Replace(_gameFolder, saveGamePath));
+                    var dstFilename = Path.Combine(saveGamePath, filename.Replace(GameFolder, saveGamePath));
                     File.Copy(filename, dstFilename);
                 }
                 profile.SaveGames.Add(new Savegame { Name = name, Path = saveGamePath });
@@ -113,12 +113,12 @@ namespace SaveGameManager.Handler
         {
             try
             {
-                CleanUpSavegame(_gameFolder);
+                CleanUpSavegame(GameFolder);
                 if (Directory.Exists(savegame.Path))
                 {
                     foreach (var filename in Directory.GetFiles(savegame.Path))
                     {
-                        var dstFilename = Path.Combine(_gameFolder, filename.Replace($@"{savegame.Path}\", ""));
+                        var dstFilename = Path.Combine(GameFolder, filename.Replace($@"{savegame.Path}\", ""));
                         File.Copy(filename, dstFilename, true);
                     }
                 }
@@ -180,9 +180,9 @@ namespace SaveGameManager.Handler
                 CleanUpSavegame(savegame.Path);
                 if (Directory.Exists(savegame.Path))
                 {
-                    foreach (var filename in Directory.GetFiles(_gameFolder))
+                    foreach (var filename in Directory.GetFiles(GameFolder))
                     {
-                        var dstFilename = filename.Replace(_gameFolder, savegame.Path);
+                        var dstFilename = filename.Replace(GameFolder, savegame.Path);
                         File.Copy(filename, dstFilename, true);
                     }
                 }

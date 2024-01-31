@@ -24,8 +24,11 @@ namespace SaveGameManagerMVVM
             services.AddSingleton<IDirectoryService, DirectoryService>();
             services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<IWindowService, WindowService>();
+
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<TextDialogViewModel>();
+            services.AddSingleton<AboutViewModel>();
+            services.AddSingleton<ProfileDialogViewModel>();
 
             services.AddSingleton(sp => new MainWindow()
             {

@@ -1,10 +1,8 @@
 ﻿using SaveGameManagerMVVM.Core;
 using SaveGameManagerMVVM.Interfaces;
-using System.Windows.Data;
 using System.Windows;
 using SaveGameManagerMVVM.Models;
 using System.Windows.Input;
-using SaveGameManagerMVVM.Views;
 
 namespace SaveGameManagerMVVM.Viewmodels
 {
@@ -15,24 +13,36 @@ namespace SaveGameManagerMVVM.Viewmodels
         private readonly IDirectoryService _directoryService;
         private readonly IWindowService _windowService;
         private readonly TextDialogViewModel _textDialog;
+        private readonly ProfileDialogViewModel _profileDialog;
+        private readonly AboutViewModel _aboutDialog;
 
         public MainViewModel(IDataService dataService,
             ISettingsService settingsService,
             IDirectoryService directoryService,
             IWindowService windowService,
-            TextDialogViewModel textDialog)
+            TextDialogViewModel textDialog,
+            ProfileDialogViewModel profileDialog,
+            AboutViewModel aboutDialog)
         {
             _dataService = dataService;
             _settingsService = settingsService;
             _directoryService = directoryService;
             _windowService = windowService;
             _textDialog = textDialog;
+            _profileDialog = profileDialog;
+            _aboutDialog = aboutDialog;
 
             CreateSaveGameCommand = new DelegateCommand(ImportSaveGame);
             DeleteSaveGameCommand = new DelegateCommand(DeleteSaveGame);
+            LoadSaveGameCommand = new DelegateCommand(LoadSaveGame);
+            ReplaceSaveGameCommand = new DelegateCommand(ReplaceSaveGame);
             SelectedItemChangedCommand = new DelegateCommand(SelectedItemChanged);
             OpenSaveGameCommand = new DelegateCommand(OpenSaveGame);
             OpenTextDialogCommand = new DelegateCommand(OpenTextDialog);
+            OpenProfileDialogCommand = new DelegateCommand(OpenProfileDialog);
+            OpenAboutDialogCommand = new DelegateCommand(OpenAboutDialog);
+            KeyDownCommand = new DelegateCommand(KeyDown);
+            LoadProfileCommand = new DelegateCommand(LoadProfile);
         }
 
         public Savegame? SelectedSaveGame 
@@ -43,9 +53,15 @@ namespace SaveGameManagerMVVM.Viewmodels
 
         public ICommand CreateSaveGameCommand { get; set; }
         public ICommand DeleteSaveGameCommand { get; set; }
+        public ICommand LoadSaveGameCommand { get; set; }
+        public ICommand ReplaceSaveGameCommand { get; set; }
         public ICommand SelectedItemChangedCommand { get; set; }
         public ICommand OpenSaveGameCommand { get; set; }
         public ICommand OpenTextDialogCommand { get; set; }
+        public ICommand OpenProfileDialogCommand { get; set; }
+        public ICommand OpenAboutDialogCommand { get; set; }
+        public ICommand KeyDownCommand { get; set; }
+        public ICommand LoadProfileCommand { get; set; }
 
         public Profile SelectedProfile
         {
@@ -76,10 +92,30 @@ namespace SaveGameManagerMVVM.Viewmodels
 
         private void SelectedItemChanged(object obj) => SelectedSaveGame = (Savegame)obj;
         private void ImportSaveGame(object obj) => _directoryService.CreateSaveGame(SelectedProfile);
-        private void DeleteSaveGame(object obj)
+        private void LoadSaveGame(object obj)
+        {
+            if (SelectedSaveGame != null)
+                _directoryService.LoadSaveGame(SelectedSaveGame);
+        }
+        private void LoadProfile(object obj) => _directoryService.LoadProfile(SelectedProfile);
+        private void ReplaceSaveGame(object obj)
+        {
+            if (SelectedSaveGame == null) return;
+
+            if (MessageBox.Show($"Do you really want to replace '{SelectedSaveGame.Name}'",
+                "Replace",MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                return;
+
+            _directoryService.ReplaceSavegame(SelectedSaveGame);
+        }
+        private void DeleteSaveGame(object? obj)
         {
             if (SelectedSaveGame != null)
             {
+                if (MessageBox.Show($"Do you really want to delete '{SelectedSaveGame.Name}'", "Delete",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                    return;
+
                 _directoryService.DeleteSaveGame(SelectedSaveGame);
                 SelectedProfile.SaveGames.Remove(SelectedSaveGame);
             }
@@ -91,177 +127,21 @@ namespace SaveGameManagerMVVM.Viewmodels
         }
         private void OpenTextDialog(object obj)
         {
-            _windowService.OpenWindow<TextDialog>(_textDialog, Application.Current.MainWindow);
+            _windowService.OpenWindow(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
         }
-
-
-        //private void SetProfiles()
-        //{
-        //    var profile = cboProfile.SelectedItem as Profile;
-        //    var profiles = cboProfile.ItemsSource as List<Profile>;
-
-        //    cboProfile.ItemsSource = _profiles;
-
-        //    if (_profiles != null && _profiles.Count > 0)
-        //    {
-        //        if (string.IsNullOrEmpty(_xmlHandler.ActiveProfile))
-        //        {
-        //            var first = _profiles.First();
-        //            cboProfile.SelectedItem = first;
-        //            _xmlHandler.ChangeProfile(first.Id);
-        //            _directoryHandler.LoadProfile(first);
-        //            tvSavegame.ItemsSource = first.SaveGames;
-        //        }
-        //        else
-        //        {
-        //            var first = _profiles.Where(p => p.Id == _xmlHandler.ActiveProfile).First();
-        //            if (first != null)
-        //            {
-        //                if (profile == null || profile.Id != _xmlHandler.ActiveProfile)
-        //                    cboProfile.SelectedItem = first;
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private void btnLoad_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (string.IsNullOrEmpty(_xmlHandler.GameFolder))
-        //    {
-        //        MessageBox.Show("Select a gamefolder, please");
-        //        return;
-        //    }
-        //    if (tvSavegame.SelectedItem == null)
-        //    {
-        //        MessageBox.Show("Select a savegame, please");
-        //        return;
-        //    }
-        //    var savegame = tvSavegame.SelectedItem as Savegame;
-        //    _directoryHandler.LoadSaveGame(savegame);
-
-        //    MessageBox.Show($"Savefile '{savegame.Name}' loaded.");
-        //}
-
-        //private void mtDelete_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (tvSavegame.SelectedItem != null)
-        //    {
-        //        var savegame = tvSavegame.SelectedItem as Savegame;
-
-        //        if (MessageBox.Show($"Do you really want to delete '{savegame.Name}'", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-        //            return;
-
-        //        _directoryHandler.DeleteSaveGame(savegame);
-
-        //        var profile = cboProfile.SelectedItem as Profile;
-        //        profile.SaveGames.Remove(savegame);
-        //        CollectionViewSource.GetDefaultView(tvSavegame.ItemsSource).Refresh();
-        //    }
-        //}
-
-        //private void tvSavegame_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (e.Key == Key.Delete)
-        //    {
-        //        mtDelete_Click(sender, e);
-        //    }
-        //}
-
-        //private void mtRename_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var savegame = tvSavegame.SelectedItem as Savegame;
-        //    var dialog = new TextDialog(savegame.Name);
-
-        //    if (dialog.ShowDialog() == true)
-        //    {
-        //        _directoryHandler.RenameSaveGameFolder(savegame, dialog.ResponseText);
-
-        //        ICollectionView view = CollectionViewSource.GetDefaultView(tvSavegame.ItemsSource);
-        //        view.Refresh();
-        //    }
-        //}
-
-        //private void mtOpenFolder_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        if (tvSavegame.SelectedItem != null)
-        //        {
-        //            var savegame = tvSavegame.SelectedItem as Savegame;
-        //            if (Directory.Exists(savegame.Path))
-        //                Process.Start("explorer.exe", savegame.Path);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Something went wrong, while trying to add a profile to select the gamefolder'.\r\n{ex.Message}");
-        //    }
-        //}
-
-        //private void btnReplace_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        if (tvSavegame.SelectedItem == null)
-        //        {
-        //            MessageBox.Show("Select a savegame, please");
-        //            return;
-        //        }
-
-        //        var savegame = tvSavegame.SelectedItem as Savegame;
-
-        //        if (MessageBox.Show($"Do you really want to replace '{savegame.Name}'", "Replace", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-        //            return;
-
-        //        _directoryHandler.ReplaceSavegame(savegame);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Something went wrong, while trying to add a profile to select the gamefolder'.\r\n{ex.Message}");
-        //    }
-        //}
-
-        //private void mtDelete_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    if (tvSavegame.SelectedItem == null)
-        //    {
-        //        mtDelete.IsEnabled = false;
-        //        mtOpenFolder.IsEnabled = false;
-        //        mtRename.IsEnabled = false;
-        //    }
-        //    else
-        //    {
-        //        mtDelete.IsEnabled = true;
-        //        mtOpenFolder.IsEnabled = true;
-        //        mtRename.IsEnabled = true;
-        //    }
-        //}
-
-        //private void tvSavegame_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        //{
-        //    btnLoad_Click(sender, e);
-        //}
-
-        //private void btSettings_Click(object sender, RoutedEventArgs e)
-        //{
-        //    cmSetting.StaysOpen = true;
-        //    cmSetting.IsOpen = true;
-        //}
-
-        //private void mtAbout_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var dialog = new About();
-        //    dialog.ShowDialog();
-        //}
-
-        //private void mtProfiles_Click(object sender, RoutedEventArgs e)
-        //{
-        //    ProfileDialog profileWindow = new ProfileDialog(_xmlHandler);
-        //    profileWindow.ShowDialog();
-
-        //    SetProfiles();
-        //    HandleControls(true);
-        //    _directoryHandler.GameFolder = _xmlHandler.GameFolder;
-        //}
+        private void OpenProfileDialog(object obj)
+        {
+            _windowService.OpenWindow(IWindowService.Windows.ProfileDialog, _profileDialog, IWindowService.Windows.MainWindow);
+        }
+        private void OpenAboutDialog(object obj)
+        {
+            _windowService.OpenWindow(IWindowService.Windows.About, _aboutDialog, IWindowService.Windows.MainWindow);
+        }
+        private void KeyDown(object obj)
+        {
+            var key = (KeyEventArgs)obj;
+            if (key.Key == Key.Delete)
+                DeleteSaveGame(null);
+        }
     }
 }

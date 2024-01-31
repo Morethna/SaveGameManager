@@ -4,12 +4,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:SaveGameManagerMVVM"
         mc:Ignorable="d"
         Title="SaveGameManager - Lies of P" 
         Height="650" Width="500" 
-        MinHeight="450" MinWidth="480"
-        WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow">
+        MinHeight="350" MinWidth="300"
+        WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow"
+        ui:WindowHelper.UseModernWindowStyle="True">
+  <b:Interaction.Triggers>
+    <b:EventTrigger EventName="Loaded">
+      <b:InvokeCommandAction Command="{Binding LoadProfileCommand}"/>
+    </b:EventTrigger>
+  </b:Interaction.Triggers>
   <Window.Resources>
     <Style TargetType="Border">
       <Setter Property="CornerRadius" Value="5"/>
@@ -33,12 +40,10 @@
       </Setter>
     </Style>
   </Window.Resources>
-  <Grid VerticalAlignment="Stretch"
-          HorizontalAlignment="Stretch"
-          UseLayoutRounding="True">
+  <Grid UseLayoutRounding="True">
     <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="50"/>
       <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="60"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="50"/>
@@ -50,75 +55,47 @@
            Grid.RowSpan="3"
            Grid.ColumnSpan="2">
       <Image.Effect>
-        <BlurEffect RenderingBias="Quality" KernelType="Gaussian" Radius="2"/>
+        <BlurEffect RenderingBias="Quality" KernelType="Gaussian" Radius="6"/>
       </Image.Effect>
     </Image>
     <ComboBox x:Name="cboProfile"
-              Grid.Column="0"
+              Grid.Column="1"
               BorderThickness="1"
-              BorderBrush="Black"
-              Height="25"
+              Height="35"
               MinHeight="25" 
-              Margin="10,5,0,0"
+              Margin="0,8,0,0"
+              FontSize="12"
+              Background="#B2484848"
               SelectedItem= "{Binding SelectedProfile}"
-              ItemsSource="{Binding Config.Profiles}">
+              ItemsSource="{Binding Config.Profiles}" BorderBrush="{x:Null}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Margin="2" Text="{Binding Name}"/>
         </DataTemplate>
       </ComboBox.ItemTemplate>
-      <ComboBox.ItemContainerStyle>
-        <Style TargetType="{x:Type ComboBoxItem}">
-          <Setter Property="Template">
-            <Setter.Value>
-              <ControlTemplate>
-                <Grid x:Name="gd">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="0"/>
-                  </Grid.ColumnDefinitions>
-                  <TextBlock Margin="5" Grid.Column="0" Text="{Binding Id}"/>
-                  <TextBlock Margin="5" Grid.Column="1" Text="{Binding Name}"/>
-                  <TextBlock Margin="5" Grid.Column="2" Text="{Binding CreationDate}"/>
-                </Grid>
-                <ControlTemplate.Triggers>
-                  <Trigger Property="ComboBoxItem.IsSelected" Value="True">
-                    <Setter TargetName="gd"  Property="Background" Value="Gray"></Setter>
-                    <Setter TargetName="gd"  Property="TextElement.Foreground" Value="White"></Setter>
-                  </Trigger>
-                  <Trigger Property="ComboBoxItem.IsMouseOver" Value="True">
-                    <Setter TargetName="gd"  Property="Background" Value="#CC9AB5F9"></Setter>
-                    <Setter TargetName="gd"  Property="TextElement.Foreground" Value="White"></Setter>
-                  </Trigger>
-                </ControlTemplate.Triggers>
-              </ControlTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-      </ComboBox.ItemContainerStyle>
     </ComboBox>
     <Button x:Name="btSettings" 
-            Grid.Column="1"
-            Margin="5,10,10,0"
-            Height="35" Width="35"
+            Grid.Column="0"
+            Height="43" Width="43"
             BorderBrush="{x:Null}" 
             Foreground="{x:Null}"
-            Style="{StaticResource MyButton}">
-      <!--Click="btSettings_Click">-->
+            Style="{StaticResource MyButton}"
+            Click="btSettings_Click">
       <Button.Background>
-        <ImageBrush ImageSource="/Resources/Icon-Zahnrad.png" Stretch="Uniform" TileMode="None"/>
+        <ImageBrush ImageSource="/Resources/cogwheel.png" Stretch="Fill" TileMode="None"/>
       </Button.Background>
       <Button.ContextMenu>
         <ContextMenu Name="cmSetting">
-          <MenuItem x:Name="mtAbout" Header="About" >
-            <!--Click="mtAbout_Click">-->
+          <MenuItem x:Name="mtAbout"
+                    Header="About"
+                    Command="{Binding OpenAboutDialogCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/P_icon.png" />
             </MenuItem.Icon>
           </MenuItem>
-          <MenuItem x:Name="mtProfiles" Header="Profiles">
-            <!--Click="mtProfiles_Click">-->
+          <MenuItem x:Name="mtProfiles" 
+                    Header="Profiles"
+                    Command="{Binding OpenProfileDialogCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/P_icon.png" />
             </MenuItem.Icon>
@@ -129,7 +106,7 @@
     <TreeView x:Name="tvSavegame"
               Grid.Row="1"
               Grid.ColumnSpan="2"
-              Background="#CCFFFFFF"
+              Background="#B2484848"
               ScrollViewer.CanContentScroll="True"
               Margin="10,0,10,0"
               ItemsSource="{Binding SelectedProfile.SaveGames}"
@@ -138,6 +115,10 @@
         <b:EventTrigger EventName="SelectedItemChanged">
           <b:InvokeCommandAction Command="{Binding SelectedItemChangedCommand}"
                                  CommandParameter="{Binding ElementName=tvSavegame, Path=SelectedItem}"/>
+        </b:EventTrigger>
+        <b:EventTrigger EventName="KeyDown">
+          <b:InvokeCommandAction Command="{Binding KeyDownCommand}"
+                                 PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
       <TreeView.ContextMenu>
@@ -158,45 +139,13 @@
           </MenuItem>
           <MenuItem x:Name="mtOpenFolder" 
                     Header="Open Folder"
-                    Command="{Binding DeleteSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
+                    Command="{Binding OpenSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/datei-offnen.png" />
             </MenuItem.Icon>
           </MenuItem>
         </ContextMenu>
       </TreeView.ContextMenu>
-      <TreeView.Resources>
-        <LinearGradientBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" EndPoint="0,1" StartPoint="0,0">
-          <GradientStop Color="#FFD9F4FF" Offset="0"/>
-          <GradientStop Color="#FF9BDDFB" Offset="1"/>
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="{x:Static SystemColors.ControlBrushKey}" EndPoint="0,1" StartPoint="0,0">
-          <GradientStop Color="#FFEEEDED" Offset="0"/>
-          <GradientStop Color="#FFDDDDDD" Offset="1"/>
-        </LinearGradientBrush>
-        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-        <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
-      </TreeView.Resources>
-      <TreeView.ItemContainerStyle>
-        <Style TargetType="{x:Type TreeViewItem}">
-          <Setter Property="BorderThickness" Value="1.5"/>
-          <Style.Triggers>
-            <Trigger Property="IsSelected" Value="True">
-              <Setter Property="BorderBrush" Value="#adc6e5"/>
-            </Trigger>
-            <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="Background" Value="#adc6e5" />
-            </Trigger>
-            <MultiTrigger>
-              <MultiTrigger.Conditions>
-                <Condition Property="IsSelected" Value="True"/>
-                <Condition Property="IsSelectionActive" Value="False"/>
-              </MultiTrigger.Conditions>
-              <Setter Property="BorderBrush" Value="LightGray"/>
-            </MultiTrigger>
-          </Style.Triggers>
-        </Style>
-      </TreeView.ItemContainerStyle>
       <TreeView.ItemTemplate>
         <HierarchicalDataTemplate>
           <StackPanel Orientation="Horizontal">
@@ -210,9 +159,10 @@
                 Grid.Row="3" Grid.ColumnSpan="2"
                 Margin="10,5,0,0">
       <Button x:Name="btnImport"
-              Background="#CCDDDDDD"
-              Height="26" Width="69"
-              Content="Import" FontSize="14"
+              Background="#B2484848"
+              Width="60" Height="27"
+              FontSize="12"
+              Content="Import"
               Command="{Binding CreateSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
@@ -221,12 +171,12 @@
         </Button.Resources>
       </Button>
       <Button x:Name="btnReplace"
-              Background="#CCDDDDDD"
-              Height="26" Width="69"
+              Background="#B2484848"
+              Width="60" Height="27"
               Margin="5,0,0,0"
+              FontSize="12"
               Content="Replace"
-              FontSize="14">
-        <!--Click="btnReplace_Click">-->
+              Command="{Binding ReplaceSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>
@@ -234,12 +184,12 @@
         </Button.Resources>
       </Button>
       <Button x:Name="btnLoad"
-              Background="#CCDDDDDD"
-              Height="26" Width="69"
+              Background="#B2484848"
+              Width="60" Height="27"
               Margin="5,0,0,0"
+              FontSize="12"
               Content="Load"
-              FontSize="14">
-        <!--Click="btnLoad_Click">-->
+              Command="{Binding LoadSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>

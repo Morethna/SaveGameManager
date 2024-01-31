@@ -3,7 +3,6 @@
 namespace SaveGameManagerMVVM.Interfaces;
 public interface IDirectoryService
 {
-    public string GameFolder { get; set; }
     public void DeleteProfilePath(Profile profile);
     public void CreateSaveGame(Profile profile);
     public void OpenSaveGame(Savegame savegame);

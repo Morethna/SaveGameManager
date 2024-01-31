@@ -2,31 +2,30 @@
 using System.Windows.Forms;
 using System.Windows.Input;
 using SaveGameManagerMVVM.Core;
-using System.Configuration;
 
 namespace SaveGameManagerMVVM.Viewmodels;
 
 public class TextDialogViewModel : ViewModelBase
 {
     private readonly IDataService _dataService;
-    private string _name = string.Empty;
-    public TextDialogViewModel(IDataService dataService)
+    private readonly IWindowService _windowService;
+
+    public TextDialogViewModel(IDataService dataService, IWindowService windowService)
     {
         _dataService = dataService;
-        Name = _dataService.SelectedSaveGame?.Name ?? "";
-
+        _windowService = windowService;
         SetNameCommand = new DelegateCommand(SetName);
     }
     public ICommand SetNameCommand { get; set; }
     public string Name 
     { 
-        get => _name;
+        get => _dataService.SelectedSaveGame?.Name ?? "";
         set 
         {
-            if (_name == value)
+            if (_dataService.SelectedSaveGame?.Name == value)
                 return;
 
-            _name = value;
+            _dataService.SelectedSaveGame.Name = value;
             OnPropertyChanged(nameof(Name));
         } 
     }
@@ -39,5 +38,6 @@ public class TextDialogViewModel : ViewModelBase
             return;
         }
         _dataService.SelectedSaveGame.Name = Name;
+        _windowService.CloseWindow(IWindowService.Windows.Textdialog);
     }
 }
