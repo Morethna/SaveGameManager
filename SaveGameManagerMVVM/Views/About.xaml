@@ -48,14 +48,16 @@
            Grid.Row="0"
            Foreground="White"
            FontSize="20"
-           Content="Version:  1.0.0">
+           Content="{Binding Version, UpdateSourceTrigger=PropertyChanged}">
     </Label>
     <StackPanel Orientation="Horizontal" Grid.Row="1">
       <Button x:Name="btnYtub" Height="34" Width="34"
               Margin="5,0,0,0"
               BorderBrush="{x:Null}" 
               Foreground="{x:Null}"
-              Style="{StaticResource MyButton}">
+              Style="{StaticResource MyButton}"
+              Command="{Binding OpenLinkCommand}"
+              CommandParameter="YouTube">
         <Button.Background>
           <ImageBrush ImageSource="/Resources/ytub_icon.png" Stretch="UniformToFill" TileMode="None"/>
         </Button.Background>
@@ -63,7 +65,9 @@
       <Button x:Name="btnTwitch" 
               Margin="5,0,0,0"
               Height="34" Width="34" BorderBrush="{x:Null}" 
-              Foreground="{x:Null}" Style="{StaticResource MyButton}">
+              Foreground="{x:Null}" Style="{StaticResource MyButton}"
+              Command="{Binding OpenLinkCommand}"
+              CommandParameter="Twitch">
         <Button.Background>
           <ImageBrush ImageSource="/Resources/Twitch.png" Stretch="UniformToFill" TileMode="None"/>
         </Button.Background>
@@ -71,7 +75,9 @@
       <Button x:Name="btnDiscord" Height="34" Width="34"
               Margin="5,0,0,0"
               BorderBrush="{x:Null}"
-              Foreground="{x:Null}" Style="{StaticResource MyButton}">
+              Foreground="{x:Null}" Style="{StaticResource MyButton}"
+              Command="{Binding OpenLinkCommand}"
+              CommandParameter="Discord">
         <Button.Background>
           <ImageBrush ImageSource="/Resources/discord.png" Stretch="UniformToFill" TileMode="None"/>
         </Button.Background>

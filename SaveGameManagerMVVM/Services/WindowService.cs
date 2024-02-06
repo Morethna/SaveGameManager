@@ -31,13 +31,21 @@ public class WindowService : IWindowService
         return string.Empty;
     }
 
-    public void OpenWindow(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
+    public void OpenWindowDialog(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
     {
         var window = GetView(win);
         ArgumentNullException.ThrowIfNull(window, nameof(window));
         window.DataContext = viewModel;
         window.Owner = GetView(parent, true);
         window.ShowDialog();
+    }
+
+    public void OpenWindow(IWindowService.Windows win, ViewModelBase viewModel)
+    {
+        var window = GetView(win);
+        ArgumentNullException.ThrowIfNull(window, nameof(window));
+        window.DataContext = viewModel;
+        window.Show();
     }
 
     public void CloseWindow(IWindowService.Windows win)
@@ -53,6 +61,7 @@ public class WindowService : IWindowService
         IWindowService.Windows.Textdialog => open ? GetViewInstance<TextDialog>() : new TextDialog(),
         IWindowService.Windows.About => open ? GetViewInstance<About>() : new About(),
         IWindowService.Windows.ProfileDialog => open ? GetViewInstance<ProfileDialog>() : new ProfileDialog(),
+        IWindowService.Windows.GitHub => open ? GetViewInstance<GitHub>() : new GitHub(),
         IWindowService.Windows.MainWindow => GetViewInstance<MainWindow>(),
         _ => throw new NotImplementedException()
     };

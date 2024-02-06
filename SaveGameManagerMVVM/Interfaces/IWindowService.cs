@@ -9,9 +9,11 @@ public interface IWindowService
         Textdialog,
         About,
         ProfileDialog,
-        MainWindow
+        MainWindow,
+        GitHub
     };
-    public void OpenWindow(Windows win, ViewModelBase viewModel, Windows parent);
+    public void OpenWindowDialog(Windows win, ViewModelBase viewModel, Windows parent);
+    public void OpenWindow(Windows win, ViewModelBase viewModel);
     public void CloseWindow(Windows win);
 
     public string OpenFolderWindow(string path);

@@ -1,16 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SaveGameManagerMVVM.Core;
+using SaveGameManagerMVVM.Resources;
+using System.Diagnostics;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Input;
 
-namespace SaveGameManagerMVVM.Viewmodels
+namespace SaveGameManagerMVVM.Viewmodels;
+
+public class AboutViewModel : ViewModelBase
 {
-    public class AboutViewModel : ViewModelBase
+    public AboutViewModel()
     {
-        public AboutViewModel()
+        OpenLinkCommand = new DelegateCommand(OpenUrl);
+    }
+    public ICommand OpenLinkCommand { get; set; }
+
+    public string Version { get => $"Version: {Assembly.GetExecutingAssembly().GetName().Version}"; }
+
+    private void OpenUrl(object obj)
+    {
+        string url = obj switch
         {
-            
+            "YouTube" => Hyperlinks.Youtube,
+            "Discord" => Hyperlinks.Discord,
+            _ => Hyperlinks.Twitch
+        };
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = @$"{url}", UseShellExecute = true });
+        }
+        catch
+        { 
+            MessageBox.Show($"Error while opening the {url}");
         }
     }
 }

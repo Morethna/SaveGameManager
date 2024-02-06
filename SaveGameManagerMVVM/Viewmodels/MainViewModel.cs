@@ -135,7 +135,7 @@ namespace SaveGameManagerMVVM.Viewmodels
             if (SelectedSaveGame != null)
             {
                 _textDialog.Name = SelectedSaveGame.Name;
-                _windowService.OpenWindow(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+                _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
 
                 if (!string.IsNullOrEmpty(_textDialog.Name))
                     SelectedSaveGame.Name = _textDialog.Name;
@@ -143,12 +143,12 @@ namespace SaveGameManagerMVVM.Viewmodels
         }
         private void OpenProfileDialog(object obj)
         {
-            _windowService.OpenWindow(IWindowService.Windows.ProfileDialog, _profileDialog, IWindowService.Windows.MainWindow);
+            _windowService.OpenWindowDialog(IWindowService.Windows.ProfileDialog, _profileDialog, IWindowService.Windows.MainWindow);
             SelectedProfile = _dataService.SelectedProfile;
         }
         private void OpenAboutDialog(object obj)
         {
-            _windowService.OpenWindow(IWindowService.Windows.About, _aboutDialog, IWindowService.Windows.MainWindow);
+            _windowService.OpenWindowDialog(IWindowService.Windows.About, _aboutDialog, IWindowService.Windows.MainWindow);
         }
         private void KeyDown(object obj)
         {

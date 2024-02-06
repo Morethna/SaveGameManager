@@ -4,6 +4,7 @@ using SaveGameManagerMVVM.Interfaces;
 using SaveGameManagerMVVM.Services;
 using SaveGameManagerMVVM.Viewmodels;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -24,11 +25,13 @@ namespace SaveGameManagerMVVM
             services.AddSingleton<IDirectoryService, DirectoryService>();
             services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<IWindowService, WindowService>();
+            services.AddSingleton<IGitHubService, GitHubService>();
 
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<TextDialogViewModel>();
             services.AddSingleton<AboutViewModel>();
             services.AddSingleton<ProfileDialogViewModel>();
+            services.AddSingleton<GitHubViewModel>();
 
             services.AddSingleton(sp => new MainWindow()
             {
@@ -40,6 +43,9 @@ namespace SaveGameManagerMVVM
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            var gitHub = _serviceProvider.GetService<IGitHubService>();
+            gitHub?.CheckGitHubNewerVersion();
+
             var startForm = _serviceProvider.GetRequiredService<MainWindow>();
             startForm.Show();
             base.OnStartup(e);

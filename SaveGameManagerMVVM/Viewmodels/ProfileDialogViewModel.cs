@@ -82,7 +82,7 @@ public class ProfileDialogViewModel : ViewModelBase
     private void AddProfile(object obj)
     {
         _textDialog.Name = string.Empty;
-        _windowService.OpenWindow(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+        _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
 
         if (!string.IsNullOrEmpty(_textDialog.Name))
         {
@@ -103,7 +103,7 @@ public class ProfileDialogViewModel : ViewModelBase
         }
 
         _textDialog.Name = SelectedProfile.Name;
-        _windowService.OpenWindow(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+        _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
 
         if (!string.IsNullOrEmpty(_textDialog.Name))
         {
