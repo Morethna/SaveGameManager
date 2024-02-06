@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Profile Configuration" 
         Height="300" MinHeight="200" 
-        Width="600" MinWidth="350"
+        Width="800" MinWidth="350"
         WindowStartupLocation="CenterScreen"  
         ui:WindowHelper.UseModernWindowStyle="True">
   <Window.Resources>
@@ -48,7 +48,8 @@
             <Setter Property="CornerRadius" Value="5"/>
           </Style>
         </Border.Resources>
-        <TextBlock x:Name="txtbGamePath" Background="#B2484848"/>
+        <TextBlock x:Name="txtbGamePath" Background="#B2484848"
+                   Text="{Binding Gamepath, UpdateSourceTrigger=PropertyChanged}"/>
       </Border>
     </StackPanel>
     <Button x:Name="btnBrowse" 
@@ -57,7 +58,8 @@
             Width="60" Height="27"
             FontSize="12"
             Margin="5,21,0,0"
-            Content="Browse">
+            Content="Browse"
+            Command="{Binding BrowseCommand, UpdateSourceTrigger=PropertyChanged}">
       <Button.Resources>
         <Style TargetType="Border">
           <Setter Property="CornerRadius" Value="5"/>
@@ -68,6 +70,7 @@
               Grid.Row="1"
               Grid.Column="0"
               ItemsSource="{Binding Profiles, UpdateSourceTrigger=PropertyChanged}"
+              SelectedItem="{Binding SelectedProfile, UpdateSourceTrigger=PropertyChanged}"
               SelectionMode="Single" 
               Margin="5"
               Background="#B2484848" 
@@ -83,7 +86,7 @@
                           Width="150" 
                           DisplayMemberBinding="{Binding Name}"/>
           <GridViewColumn Header="Id" 
-                          Width="200" 
+                          Width="300" 
                           DisplayMemberBinding="{Binding Id}"/>
           <GridViewColumn Header="CreationTime" 
                           Width="170" 
@@ -98,19 +101,8 @@
               Width="60" Height="27"
               FontSize="12"
               Margin="5,5,0,0"
-              Content="Add">
-        <Button.Resources>
-          <Style TargetType="Border">
-            <Setter Property="CornerRadius" Value="5"/>
-          </Style>
-        </Button.Resources>
-      </Button>
-      <Button x:Name="btnDelete"
-              Background="#B2484848"
-              Width="60" Height="27"
-              FontSize="12"
-              Margin="5,5,0,0"
-              Content="Delete">
+              Content="Add"
+              Command="{Binding AddProfileCommand, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="Border">
             <Setter Property="CornerRadius" Value="5"/>
@@ -122,9 +114,23 @@
               Width="60" Height="27"
               FontSize="12"
               Margin="5,5,0,0"
-              Content="Edit">
+              Content="Edit"
+              Command="{Binding EditProfileCommand, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="Border">
+            <Setter Property="CornerRadius" Value="5"/>
+          </Style>
+        </Button.Resources>
+      </Button>
+      <Button x:Name="btnDelete"
+              Background="#B2484848"
+              Width="60" Height="27"
+              FontSize="12"
+              Margin="5,5,0,0"
+              Content="Delete"
+              Command="{Binding DeleteProfileCommand, UpdateSourceTrigger=PropertyChanged}">
+        <Button.Resources>
+          <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>
           </Style>
         </Button.Resources>

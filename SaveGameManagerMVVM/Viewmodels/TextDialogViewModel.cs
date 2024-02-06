@@ -7,25 +7,24 @@ namespace SaveGameManagerMVVM.Viewmodels;
 
 public class TextDialogViewModel : ViewModelBase
 {
-    private readonly IDataService _dataService;
     private readonly IWindowService _windowService;
+    private string _name = string.Empty;
 
-    public TextDialogViewModel(IDataService dataService, IWindowService windowService)
+    public TextDialogViewModel(IWindowService windowService)
     {
-        _dataService = dataService;
         _windowService = windowService;
         SetNameCommand = new DelegateCommand(SetName);
     }
     public ICommand SetNameCommand { get; set; }
     public string Name 
     { 
-        get => _dataService.SelectedSaveGame?.Name ?? "";
+        get => _name;
         set 
         {
-            if (_dataService.SelectedSaveGame?.Name == value)
+            if (_name == value)
                 return;
 
-            _dataService.SelectedSaveGame.Name = value;
+            _name = value;
             OnPropertyChanged(nameof(Name));
         } 
     }
@@ -37,7 +36,6 @@ public class TextDialogViewModel : ViewModelBase
             MessageBox.Show("Name can't be empty!");
             return;
         }
-        _dataService.SelectedSaveGame.Name = Name;
         _windowService.CloseWindow(IWindowService.Windows.Textdialog);
     }
 }

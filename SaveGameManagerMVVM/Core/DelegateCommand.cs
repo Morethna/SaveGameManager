@@ -5,26 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SaveGameManagerMVVM.Core
+namespace SaveGameManagerMVVM.Core;
+
+internal class DelegateCommand : ICommand
 {
-    internal class DelegateCommand : ICommand
+    private readonly Action<object> _execute;
+    private readonly Predicate<object> _canExecute;
+
+    public DelegateCommand(Action<object> execute, Predicate<object> canExecute)
     {
-        private readonly Action<object> _execute;
-        private readonly Predicate<object> _canExecute;
-
-        public DelegateCommand(Action<object> execute, Predicate<object> canExecute)
-        {
-            _execute = execute;
-            _canExecute = canExecute;
-        }
-        public DelegateCommand(Action<object> execute) : this(execute, null) { }
-
-        public event EventHandler? CanExecuteChanged;
-
-        public void RaiseCanExecuteChange() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-
-        public bool CanExecute(object? paramter) => _canExecute?.Invoke(paramter) ?? true;
-
-        public void Execute(object? parameter) => _execute?.Invoke(parameter);
+        _execute = execute;
+        _canExecute = canExecute;
     }
+    public DelegateCommand(Action<object> execute) : this(execute, null) { }
+
+    public event EventHandler? CanExecuteChanged;
+
+    public void RaiseCanExecuteChange() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+    public bool CanExecute(object? paramter) => _canExecute?.Invoke(paramter) ?? true;
+
+    public void Execute(object? parameter) => _execute?.Invoke(parameter);
 }

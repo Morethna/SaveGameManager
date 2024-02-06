@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
+using SaveGameManagerMVVM.Viewmodels;
 
 namespace SaveGameManager.Handler
 {
@@ -91,6 +92,25 @@ namespace SaveGameManager.Handler
                 MessageBox.Show($"Something went wrong, while trying to create the Savegame '{name}' on the filesystem.\r\n{ex.Message}");
             }
         }
+        public void CreateProfile(Profile profile)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(GameFolder))
+                {
+                    MessageBox.Show("Select a gamefolder, please");
+                    return;
+                }
+
+                var profilePath = Path.Combine(SaveGameFolder, profile.Id);
+                Directory.CreateDirectory(profilePath);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Something went wrong, while trying to create the Profile '{profile.Name}' on the filesystem.\r\n{ex.Message}");
+            }
+        }
         public void DeleteSaveGame(Savegame savegame)
         {
             try
@@ -157,6 +177,9 @@ namespace SaveGameManager.Handler
         {
             try
             {
+                if (profile is null)
+                    return;
+
                 var saveGamePath = Path.Combine(SaveGameFolder, profile.Id);
                 if (Directory.Exists(saveGamePath))
                 {

@@ -2,6 +2,7 @@
 using SaveGameManagerMVVM.Viewmodels;
 using SaveGameManagerMVVM.Views;
 using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms.Design;
@@ -13,6 +14,21 @@ public class WindowService : IWindowService
     public WindowService()
     {
         
+    }
+
+    public string OpenFolderWindow(string path = "")
+    {
+        var dialog = new System.Windows.Forms.FolderBrowserDialog();
+        dialog.InitialDirectory = @"C:\";
+
+        if (!string.IsNullOrEmpty(path) & Directory.Exists(path))
+            dialog.InitialDirectory = path;
+
+
+        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            return dialog.SelectedPath;
+
+        return string.Empty;
     }
 
     public void OpenWindow(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)

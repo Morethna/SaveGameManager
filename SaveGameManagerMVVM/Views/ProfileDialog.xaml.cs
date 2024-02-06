@@ -10,9 +10,4 @@ public partial class ProfileDialog : Window
     {
         InitializeComponent();
     }
-
-    private void lvProfiles_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
-    {
-
-    }
 }

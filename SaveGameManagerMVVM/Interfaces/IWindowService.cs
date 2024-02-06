@@ -13,4 +13,6 @@ public interface IWindowService
     };
     public void OpenWindow(Windows win, ViewModelBase viewModel, Windows parent);
     public void CloseWindow(Windows win);
+
+    public string OpenFolderWindow(string path);
 }

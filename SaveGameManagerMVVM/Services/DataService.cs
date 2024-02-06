@@ -29,8 +29,13 @@ public class DataService : IDataService
         get => _selectedProfile;
         set
         {
+            if (_selectedProfile == value)
+                return;
+
             _selectedProfile = value;
-            Config.ActiveProfile = _selectedProfile.Id;
+
+            if (_selectedProfile != null)
+                Config.ActiveProfile = _selectedProfile.Id;
         }
     }
     public Savegame? SelectedSaveGame { get; set; }
@@ -88,20 +93,6 @@ public class DataService : IDataService
         catch (Exception ex)
         {
             //_logger.LogError($"Error while trying to set the gamepath. Gamepath: \"{gamePath}\"", ex);
-        }
-    }
-
-    public void AddProfile(Profile profile)
-    {
-        try
-        {
-            _config.Profiles.Add(profile);
-            SaveConfigAsync();
-            //_logger.LogDebug($"Profile has been added. Profile: \"{profile.Name}\"");
-        }
-        catch (Exception ex)
-        {
-            //_logger.LogError($"Error while trying to add a Profile. Profile: \"{profile.Name}\"", ex);
         }
     }
 

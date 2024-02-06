@@ -9,6 +9,7 @@ public interface IDirectoryService
     public void DeleteSaveGame(Savegame savegame);
     public void LoadSaveGame(Savegame savegame);
     public void RenameSaveGameFolder(Savegame savegame, string newName);
+    public void CreateProfile(Profile profile);
     public void LoadProfile(Profile profile);
     public void ReplaceSavegame(Savegame savegame);
 }

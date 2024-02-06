@@ -15,6 +15,7 @@ namespace SaveGameManagerMVVM.Viewmodels
         private readonly TextDialogViewModel _textDialog;
         private readonly ProfileDialogViewModel _profileDialog;
         private readonly AboutViewModel _aboutDialog;
+        private Profile _selectedProfile;
 
         public MainViewModel(IDataService dataService,
             ISettingsService settingsService,
@@ -31,6 +32,8 @@ namespace SaveGameManagerMVVM.Viewmodels
             _textDialog = textDialog;
             _profileDialog = profileDialog;
             _aboutDialog = aboutDialog;
+
+            _selectedProfile = _dataService.SelectedProfile;
 
             CreateSaveGameCommand = new DelegateCommand(ImportSaveGame);
             DeleteSaveGameCommand = new DelegateCommand(DeleteSaveGame);
@@ -65,14 +68,16 @@ namespace SaveGameManagerMVVM.Viewmodels
 
         public Profile SelectedProfile
         {
-            get => _dataService.SelectedProfile;
+            get => _selectedProfile;
             set
             {
-                if (_dataService.SelectedProfile == value)
+                if (_selectedProfile == value)
                     return;
 
-                _dataService.SelectedProfile = value;
-                _directoryService.LoadProfile(SelectedProfile);
+                _selectedProfile = value;
+                _dataService.SelectedProfile = _selectedProfile;
+
+                _directoryService.LoadProfile(_selectedProfile);
                 OnPropertyChanged(nameof(SelectedProfile));
             }
         }
@@ -127,11 +132,19 @@ namespace SaveGameManagerMVVM.Viewmodels
         }
         private void OpenTextDialog(object obj)
         {
-            _windowService.OpenWindow(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+            if (SelectedSaveGame != null)
+            {
+                _textDialog.Name = SelectedSaveGame.Name;
+                _windowService.OpenWindow(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+
+                if (!string.IsNullOrEmpty(_textDialog.Name))
+                    SelectedSaveGame.Name = _textDialog.Name;
+            }
         }
         private void OpenProfileDialog(object obj)
         {
             _windowService.OpenWindow(IWindowService.Windows.ProfileDialog, _profileDialog, IWindowService.Windows.MainWindow);
+            SelectedProfile = _dataService.SelectedProfile;
         }
         private void OpenAboutDialog(object obj)
         {
