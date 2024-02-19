@@ -3,6 +3,8 @@ using SaveGameManagerMVVM.Interfaces;
 using System.Windows;
 using SaveGameManagerMVVM.Models;
 using System.Windows.Input;
+using System;
+using System.Xml.Linq;
 
 namespace SaveGameManagerMVVM.Viewmodels
 {
@@ -17,13 +19,8 @@ namespace SaveGameManagerMVVM.Viewmodels
         private readonly AboutViewModel _aboutDialog;
         private Profile _selectedProfile;
 
-        public MainViewModel(IDataService dataService,
-            ISettingsService settingsService,
-            IDirectoryService directoryService,
-            IWindowService windowService,
-            TextDialogViewModel textDialog,
-            ProfileDialogViewModel profileDialog,
-            AboutViewModel aboutDialog)
+        public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService, IWindowService windowService,
+            TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog)
         {
             _dataService = dataService;
             _settingsService = settingsService;
@@ -48,10 +45,10 @@ namespace SaveGameManagerMVVM.Viewmodels
             LoadProfileCommand = new DelegateCommand(LoadProfile);
         }
 
-        public Savegame? SelectedSaveGame 
-        { 
-            get => _dataService.SelectedSaveGame; 
-            set => _dataService.SelectedSaveGame = value; 
+        public Savegame? SelectedSaveGame
+        {
+            get => _dataService.SelectedSaveGame;
+            set => _dataService.SelectedSaveGame = value;
         }
 
         public ICommand CreateSaveGameCommand { get; set; }
@@ -96,38 +93,74 @@ namespace SaveGameManagerMVVM.Viewmodels
         }
 
         private void SelectedItemChanged(object obj) => SelectedSaveGame = (Savegame)obj;
-        private void ImportSaveGame(object obj) => _directoryService.CreateSaveGame(SelectedProfile);
+        private void ImportSaveGame(object obj)
+        {
+            try
+            {
+                _directoryService.CreateSaveGame(SelectedProfile);
+                _windowService.NotifierSuccess($"Imported savegame");
+            }
+            catch (Exception ex)
+            {
+                _windowService.NotifierError($"Something went wrong, while trying to create a new Savegame.\r\n{ex.Message}");
+            }
+        }
         private void LoadSaveGame(object obj)
         {
-            if (SelectedSaveGame != null)
+            try
+            {
+                if (SelectedSaveGame == null) return;
+
                 _directoryService.LoadSaveGame(SelectedSaveGame);
+                _windowService.NotifierSuccess($"\"{SelectedSaveGame.Name}\" has been loaded.");
+            }
+            catch (Exception ex)
+            {
+                _windowService.NotifierError($"Something went wrong, while loading the Savegame \"{SelectedSaveGame?.Name}\".\r\n{ex.Message}");
+            }
         }
         private void LoadProfile(object obj) => _directoryService.LoadProfile(SelectedProfile);
         private void ReplaceSaveGame(object obj)
         {
-            if (SelectedSaveGame == null) return;
+            try
+            {
+                if (SelectedSaveGame == null) return;
 
-            if (MessageBox.Show($"Do you really want to replace '{SelectedSaveGame.Name}'",
-                "Replace",MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                return;
+                if (MessageBox.Show($"Do you really want to replace '{SelectedSaveGame.Name}'",
+                    "Replace", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                    return;
 
-            _directoryService.ReplaceSavegame(SelectedSaveGame);
-        }
+                _directoryService.ReplaceSavegame(SelectedSaveGame);
+                _windowService.NotifierSuccess($"\"{SelectedSaveGame.Name}\" has been replaced");
+            }
+            catch (Exception ex)
+            {
+                _windowService.NotifierError($"Something went wrong, while trying to replace the Savegame \"{SelectedSaveGame?.Name}\".\r\n{ex.Message}");
+            }
+}
         private void DeleteSaveGame(object? obj)
         {
-            if (SelectedSaveGame != null)
+            try
             {
-                if (MessageBox.Show($"Do you really want to delete '{SelectedSaveGame.Name}'", "Delete",
+                if (SelectedSaveGame == null) return;
+
+                if (MessageBox.Show($"Do you really want to delete \"{SelectedSaveGame.Name}\"", "Delete",
                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                     return;
 
                 _directoryService.DeleteSaveGame(SelectedSaveGame);
                 SelectedProfile.SaveGames.Remove(SelectedSaveGame);
+
+                _windowService.NotifierSuccess($"\"{SelectedSaveGame.Name}\" has been deleted.");
+            }
+            catch (Exception ex)
+            {
+                _windowService.NotifierError($"Something went wrong, while trying to delete the Savegame '{SelectedSaveGame?.Name}' from the filesystem.\r\n{ex.Message}");
             }
         }
         private void OpenSaveGame(object obj)
         {
-            if (SelectedSaveGame != null) 
+            if (SelectedSaveGame != null)
                 _directoryService.OpenSaveGame(SelectedSaveGame);
         }
         private void OpenTextDialog(object obj)

@@ -2,19 +2,44 @@
 using SaveGameManagerMVVM.Viewmodels;
 using SaveGameManagerMVVM.Views;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Forms.Design;
+using System.Windows.Data;
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
+using ToastNotifications.Position;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace SaveGameManagerMVVM.Services;
 
 public class WindowService : IWindowService
 {
+    Notifier? _notifier;
     public WindowService()
     {
-        
+        _notifier = new Notifier(cfg =>
+        {
+            cfg.PositionProvider = new WindowPositionProvider(
+                parentWindow: Application.Current.MainWindow,
+                corner: Corner.TopRight,
+                offsetX: 10,
+                offsetY: 30);
+
+            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                notificationLifetime: TimeSpan.FromSeconds(2),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(3));
+
+            cfg.Dispatcher = Application.Current.Dispatcher;
+        });
     }
+
+    public void NotifierInformation(string message) => _notifier.ShowInformation(message);
+    public void NotifierSuccess(string message) => _notifier.ShowSuccess(message);
+    public void NotifierWarning(string message) => _notifier.ShowWarning(message);
+    public void NotifierError(string message) => _notifier.ShowError(message);
 
     public string OpenFolderWindow(string path = "")
     {
@@ -31,13 +56,17 @@ public class WindowService : IWindowService
         return string.Empty;
     }
 
-    public void OpenWindowDialog(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
+    public bool OpenWindowDialog(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
     {
         var window = GetView(win);
         ArgumentNullException.ThrowIfNull(window, nameof(window));
         window.DataContext = viewModel;
         window.Owner = GetView(parent, true);
-        window.ShowDialog();
+
+        if (window.ShowDialog() == true)
+            return true;
+
+        return false;
     }
 
     public void OpenWindow(IWindowService.Windows win, ViewModelBase viewModel)

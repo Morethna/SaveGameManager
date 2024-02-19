@@ -13,11 +13,13 @@ namespace SaveGameManager.Handler
     {
         private static Random random = new Random();
         private readonly IDataService _dataService;
+        private readonly IWindowService _windowService;
 
         #region ctor
-        public DirectoryService(IDataService dataService)
+        public DirectoryService(IDataService dataService, IWindowService windowService)
         {
             _dataService = dataService;
+            _windowService = windowService;
         }
         #endregion
 
@@ -69,28 +71,22 @@ namespace SaveGameManager.Handler
         public void CreateSaveGame(Profile profile)
         {
             var name = RandomString(8);
-            try
-            {
-                if (string.IsNullOrEmpty(GameFolder))
-                {
-                    MessageBox.Show("Select a gamefolder, please");
-                    return;
-                }    
-                
-                var saveGamePath = Path.Combine(SaveGameFolder, profile.Id, name);
-                Directory.CreateDirectory(saveGamePath);
 
-                foreach (var filename in Directory.GetFiles(GameFolder))
-                {
-                    var dstFilename = Path.Combine(saveGamePath, filename.Replace(GameFolder, saveGamePath));
-                    File.Copy(filename, dstFilename);
-                }
-                profile.SaveGames.Add(new Savegame { Name = name, Path = saveGamePath });
-            }
-            catch (Exception ex)
+            if (string.IsNullOrEmpty(GameFolder))
             {
-                MessageBox.Show($"Something went wrong, while trying to create the Savegame '{name}' on the filesystem.\r\n{ex.Message}");
+                MessageBox.Show("Select a gamefolder, please");
+                return;
             }
+
+            var saveGamePath = Path.Combine(SaveGameFolder, profile.Id, name);
+            Directory.CreateDirectory(saveGamePath);
+
+            foreach (var filename in Directory.GetFiles(GameFolder))
+            {
+                var dstFilename = Path.Combine(saveGamePath, filename.Replace(GameFolder, saveGamePath));
+                File.Copy(filename, dstFilename);
+            }
+            profile.SaveGames.Add(new Savegame { Name = name, Path = saveGamePath });
         }
         public void CreateProfile(Profile profile)
         {
@@ -113,42 +109,31 @@ namespace SaveGameManager.Handler
         }
         public void DeleteSaveGame(Savegame savegame)
         {
-            try
+
+            if (Directory.Exists(savegame.Path))
             {
-                if (Directory.Exists(savegame.Path))
+                foreach (string file in Directory.GetFiles(savegame.Path))
                 {
-                    foreach (string file in Directory.GetFiles(savegame.Path))
-                    {
-                        File.Delete(file);
-                    }
-                    Directory.Delete(savegame.Path);
+                    File.Delete(file);
                 }
+                Directory.Delete(savegame.Path);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Something went wrong, while trying to delete the Savegame '{savegame.Name}' from the filesystem.\r\n{ex.Message}");
-            }
+
         }
         public void LoadSaveGame(Savegame savegame)
         {
-            try
+            CleanUpSavegame(GameFolder);
+            if (Directory.Exists(savegame.Path))
             {
-                CleanUpSavegame(GameFolder);
-                if (Directory.Exists(savegame.Path))
+                foreach (var filename in Directory.GetFiles(savegame.Path))
                 {
-                    foreach (var filename in Directory.GetFiles(savegame.Path))
-                    {
-                        var dstFilename = Path.Combine(GameFolder, filename.Replace($@"{savegame.Path}\", ""));
-                        File.Copy(filename, dstFilename, true);
-                    }
+                    var dstFilename = Path.Combine(GameFolder, filename.Replace($@"{savegame.Path}\", ""));
+                    File.Copy(filename, dstFilename, true);
                 }
-                else
-                    throw new DirectoryNotFoundException($"Directory {savegame.Path} was not found");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Something went wrong, while loading the Savegame '{savegame.Name}'.\r\n{ex.Message}");
-            }
+            else
+                throw new DirectoryNotFoundException($"Directory {savegame.Path} was not found");
+
         }
         public void RenameSaveGameFolder(Savegame savegame, string newName)
         {
@@ -198,21 +183,14 @@ namespace SaveGameManager.Handler
         }
         public void ReplaceSavegame(Savegame savegame)
         {
-            try
+            CleanUpSavegame(savegame.Path);
+            if (Directory.Exists(savegame.Path))
             {
-                CleanUpSavegame(savegame.Path);
-                if (Directory.Exists(savegame.Path))
+                foreach (var filename in Directory.GetFiles(GameFolder))
                 {
-                    foreach (var filename in Directory.GetFiles(GameFolder))
-                    {
-                        var dstFilename = filename.Replace(GameFolder, savegame.Path);
-                        File.Copy(filename, dstFilename, true);
-                    }
+                    var dstFilename = filename.Replace(GameFolder, savegame.Path);
+                    File.Copy(filename, dstFilename, true);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Something went wrong, while replace savegame '{savegame.Name}'.\r\n{ex.Message}");
             }
         }
         public void OpenSaveGame(Savegame savegame)
