@@ -2,16 +2,14 @@
 using SaveGameManagerMVVM.Viewmodels;
 using SaveGameManagerMVVM.Views;
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
 using ToastNotifications;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using MessageBox = SaveGameManagerMVVM.Views.MessageBox;
 
 namespace SaveGameManagerMVVM.Services;
 
@@ -56,17 +54,13 @@ public class WindowService : IWindowService
         return string.Empty;
     }
 
-    public bool OpenWindowDialog(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
+    public void OpenWindowDialog(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
     {
         var window = GetView(win);
         ArgumentNullException.ThrowIfNull(window, nameof(window));
         window.DataContext = viewModel;
         window.Owner = GetView(parent, true);
-
-        if (window.ShowDialog() == true)
-            return true;
-
-        return false;
+        window.ShowDialog();
     }
 
     public void OpenWindow(IWindowService.Windows win, ViewModelBase viewModel)
@@ -88,6 +82,7 @@ public class WindowService : IWindowService
     {
 
         IWindowService.Windows.Textdialog => open ? GetViewInstance<TextDialog>() : new TextDialog(),
+        IWindowService.Windows.MessageBox => open ? GetViewInstance<MessageBox>() : new MessageBox(),
         IWindowService.Windows.About => open ? GetViewInstance<About>() : new About(),
         IWindowService.Windows.ProfileDialog => open ? GetViewInstance<ProfileDialog>() : new ProfileDialog(),
         IWindowService.Windows.GitHub => open ? GetViewInstance<GitHub>() : new GitHub(),

@@ -98,14 +98,14 @@ public class ProfileDialogViewModel : ViewModelBase
     {
         if (SelectedProfile is null)
         {
-            MessageBox.Show("Select a profile, please.");
+            _windowService.NotifierWarning("Select a profile, please.");
             return;
         }
 
         _textDialog.Name = SelectedProfile.Name;
-        _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+        _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.ProfileDialog);
 
-        if (!string.IsNullOrEmpty(_textDialog.Name))
+        if (!string.IsNullOrEmpty(_textDialog.Name) && _textDialog.Ok)
         {
             SelectedProfile.Name = _textDialog.Name;
             _dataService.SaveConfigAsync();

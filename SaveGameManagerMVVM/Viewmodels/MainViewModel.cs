@@ -4,7 +4,6 @@ using System.Windows;
 using SaveGameManagerMVVM.Models;
 using System.Windows.Input;
 using System;
-using System.Xml.Linq;
 
 namespace SaveGameManagerMVVM.Viewmodels
 {
@@ -17,10 +16,11 @@ namespace SaveGameManagerMVVM.Viewmodels
         private readonly TextDialogViewModel _textDialog;
         private readonly ProfileDialogViewModel _profileDialog;
         private readonly AboutViewModel _aboutDialog;
+        private readonly MessageBoxViewModel _messageBox;
         private Profile _selectedProfile;
 
         public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService, IWindowService windowService,
-            TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog)
+            TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, MessageBoxViewModel messageBox) 
         {
             _dataService = dataService;
             _settingsService = settingsService;
@@ -29,6 +29,7 @@ namespace SaveGameManagerMVVM.Viewmodels
             _textDialog = textDialog;
             _profileDialog = profileDialog;
             _aboutDialog = aboutDialog;
+            _messageBox = messageBox;
 
             _selectedProfile = _dataService.SelectedProfile;
 
@@ -144,9 +145,11 @@ namespace SaveGameManagerMVVM.Viewmodels
             {
                 if (SelectedSaveGame == null) return;
 
-                if (MessageBox.Show($"Do you really want to delete \"{SelectedSaveGame.Name}\"", "Delete",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                    return;
+                _messageBox.Title = "Delete Savegame";
+                _messageBox.Message = $"Do you really want to delete \"{SelectedSaveGame.Name}\"";
+                _windowService.OpenWindowDialog(IWindowService.Windows.MessageBox, _messageBox, IWindowService.Windows.MainWindow);
+
+                if (!_messageBox.Result) return;
 
                 _directoryService.DeleteSaveGame(SelectedSaveGame);
                 SelectedProfile.SaveGames.Remove(SelectedSaveGame);
@@ -165,14 +168,13 @@ namespace SaveGameManagerMVVM.Viewmodels
         }
         private void OpenTextDialog(object obj)
         {
-            if (SelectedSaveGame != null)
-            {
-                _textDialog.Name = SelectedSaveGame.Name;
-                _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+            if (SelectedSaveGame == null) return;
 
-                if (!string.IsNullOrEmpty(_textDialog.Name))
-                    SelectedSaveGame.Name = _textDialog.Name;
-            }
+            _textDialog.Name = SelectedSaveGame.Name;
+            _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+
+            if (!string.IsNullOrEmpty(_textDialog.Name) && _textDialog.Ok)
+                SelectedSaveGame.Name = _textDialog.Name;
         }
         private void OpenProfileDialog(object obj)
         {

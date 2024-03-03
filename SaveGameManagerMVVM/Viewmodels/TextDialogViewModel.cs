@@ -16,6 +16,8 @@ public class TextDialogViewModel : ViewModelBase
         SetNameCommand = new DelegateCommand(SetName);
     }
     public ICommand SetNameCommand { get; set; }
+
+    public bool Ok { get; private set; } = false;
     public string Name 
     { 
         get => _name;
@@ -33,9 +35,10 @@ public class TextDialogViewModel : ViewModelBase
     {
         if (string.IsNullOrEmpty(Name))
         {
-            MessageBox.Show("Name can't be empty!");
+            _windowService.NotifierWarning("Name can't be empty!");
             return;
         }
+        Ok = true;
         _windowService.CloseWindow(IWindowService.Windows.Textdialog);
     }
 }

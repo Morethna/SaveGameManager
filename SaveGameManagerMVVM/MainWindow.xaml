@@ -79,8 +79,7 @@
             Height="43" Width="43"
             BorderBrush="{x:Null}" 
             Foreground="{x:Null}"
-            Style="{StaticResource MyButton}"
-            Click="btSettings_Click">
+            Style="{StaticResource MyButton}">
       <Button.Background>
         <ImageBrush ImageSource="/Resources/cogwheel.png" Stretch="Fill" TileMode="None"/>
       </Button.Background>
@@ -102,6 +101,12 @@
           </MenuItem>
         </ContextMenu>
       </Button.ContextMenu>
+      <b:Interaction.Triggers>
+        <b:EventTrigger  EventName="Click">
+          <b:ChangePropertyAction TargetObject="{Binding ContextMenu, ElementName=btSettings}" PropertyName="PlacementTarget" Value="{Binding ElementName=btSettings, Mode=OneWay}"/>
+          <b:ChangePropertyAction TargetObject="{Binding ContextMenu, ElementName=btSettings}" PropertyName="IsOpen" Value="True"/>
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
     </Button>
     <TreeView x:Name="tvSavegame"
               Grid.Row="1"

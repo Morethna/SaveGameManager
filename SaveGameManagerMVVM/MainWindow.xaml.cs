@@ -19,7 +19,7 @@ public partial class MainWindow : Window
         while (source != null && !(source is TreeViewItem))
             source = VisualTreeHelper.GetParent(source);
 
-        return (TreeViewItem)source;
+        return source as TreeViewItem;
     }
     private void tvSavegame_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
@@ -30,10 +30,5 @@ public partial class MainWindow : Window
             treeViewItem.Focus();
             e.Handled = true;
         }
-    }
-    private void btSettings_Click(object sender, RoutedEventArgs e)
-    {
-        cmSetting.StaysOpen = true;
-        cmSetting.IsOpen = true;
     }
 }
