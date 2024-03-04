@@ -32,7 +32,7 @@ namespace SaveGameManagerMVVM
             services.AddSingleton<AboutViewModel>();
             services.AddSingleton<ProfileDialogViewModel>();
             services.AddSingleton<GitHubViewModel>();
-            services.AddSingleton<MessageBoxViewModel>();
+            services.AddSingleton<NotificationBoxViewModel>();
 
             services.AddSingleton(sp => new MainWindow()
             {

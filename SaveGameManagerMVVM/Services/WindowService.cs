@@ -9,7 +9,6 @@ using ToastNotifications;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
-using MessageBox = SaveGameManagerMVVM.Views.MessageBox;
 
 namespace SaveGameManagerMVVM.Services;
 
@@ -82,7 +81,7 @@ public class WindowService : IWindowService
     {
 
         IWindowService.Windows.Textdialog => open ? GetViewInstance<TextDialog>() : new TextDialog(),
-        IWindowService.Windows.MessageBox => open ? GetViewInstance<MessageBox>() : new MessageBox(),
+        IWindowService.Windows.NotificationBox => open ? GetViewInstance<NotificationBox>() : new NotificationBox(),
         IWindowService.Windows.About => open ? GetViewInstance<About>() : new About(),
         IWindowService.Windows.ProfileDialog => open ? GetViewInstance<ProfileDialog>() : new ProfileDialog(),
         IWindowService.Windows.GitHub => open ? GetViewInstance<GitHub>() : new GitHub(),

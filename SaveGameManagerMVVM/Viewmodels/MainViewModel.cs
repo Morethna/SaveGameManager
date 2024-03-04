@@ -4,6 +4,7 @@ using System.Windows;
 using SaveGameManagerMVVM.Models;
 using System.Windows.Input;
 using System;
+using System.Diagnostics;
 
 namespace SaveGameManagerMVVM.Viewmodels
 {
@@ -16,11 +17,11 @@ namespace SaveGameManagerMVVM.Viewmodels
         private readonly TextDialogViewModel _textDialog;
         private readonly ProfileDialogViewModel _profileDialog;
         private readonly AboutViewModel _aboutDialog;
-        private readonly MessageBoxViewModel _messageBox;
+        private readonly NotificationBoxViewModel _notificationBox;
         private Profile _selectedProfile;
 
         public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService, IWindowService windowService,
-            TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, MessageBoxViewModel messageBox) 
+            TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, NotificationBoxViewModel notificationBox) 
         {
             _dataService = dataService;
             _settingsService = settingsService;
@@ -29,7 +30,7 @@ namespace SaveGameManagerMVVM.Viewmodels
             _textDialog = textDialog;
             _profileDialog = profileDialog;
             _aboutDialog = aboutDialog;
-            _messageBox = messageBox;
+            _notificationBox = notificationBox;
 
             _selectedProfile = _dataService.SelectedProfile;
 
@@ -39,7 +40,7 @@ namespace SaveGameManagerMVVM.Viewmodels
             ReplaceSaveGameCommand = new DelegateCommand(ReplaceSaveGame);
             SelectedItemChangedCommand = new DelegateCommand(SelectedItemChanged);
             OpenSaveGameCommand = new DelegateCommand(OpenSaveGame);
-            OpenTextDialogCommand = new DelegateCommand(OpenTextDialog);
+            RenameSavegameCommand = new DelegateCommand(RenameSavegame);
             OpenProfileDialogCommand = new DelegateCommand(OpenProfileDialog);
             OpenAboutDialogCommand = new DelegateCommand(OpenAboutDialog);
             KeyDownCommand = new DelegateCommand(KeyDown);
@@ -58,7 +59,7 @@ namespace SaveGameManagerMVVM.Viewmodels
         public ICommand ReplaceSaveGameCommand { get; set; }
         public ICommand SelectedItemChangedCommand { get; set; }
         public ICommand OpenSaveGameCommand { get; set; }
-        public ICommand OpenTextDialogCommand { get; set; }
+        public ICommand RenameSavegameCommand { get; set; }
         public ICommand OpenProfileDialogCommand { get; set; }
         public ICommand OpenAboutDialogCommand { get; set; }
         public ICommand KeyDownCommand { get; set; }
@@ -123,42 +124,47 @@ namespace SaveGameManagerMVVM.Viewmodels
         private void LoadProfile(object obj) => _directoryService.LoadProfile(SelectedProfile);
         private void ReplaceSaveGame(object obj)
         {
+            if (SelectedSaveGame == null) return;
+            var repSG = SelectedSaveGame.Name;
+
             try
             {
-                if (SelectedSaveGame == null) return;
+                _notificationBox.Title = "Replace Savegame";
+                _notificationBox.Message = $"Do you really want to replace \"{repSG}\"?";
+                _windowService.OpenWindowDialog(IWindowService.Windows.NotificationBox, _notificationBox, IWindowService.Windows.MainWindow);
 
-                if (MessageBox.Show($"Do you really want to replace '{SelectedSaveGame.Name}'",
-                    "Replace", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                    return;
+                if (!_notificationBox.Result) return;
 
                 _directoryService.ReplaceSavegame(SelectedSaveGame);
-                _windowService.NotifierSuccess($"\"{SelectedSaveGame.Name}\" has been replaced");
+                _windowService.NotifierSuccess($"\"{repSG}\" has been replaced");
+
             }
             catch (Exception ex)
             {
-                _windowService.NotifierError($"Something went wrong, while trying to replace the Savegame \"{SelectedSaveGame?.Name}\".\r\n{ex.Message}");
+                _windowService.NotifierError($"Something went wrong, while trying to replace the Savegame \"{repSG}\".\r\n{ex.Message}");
             }
 }
         private void DeleteSaveGame(object? obj)
         {
+            if (SelectedSaveGame == null) return;
+            var delSG = SelectedSaveGame.Name;
+
             try
             {
-                if (SelectedSaveGame == null) return;
+                _notificationBox.Title = "Delete Savegame";
+                _notificationBox.Message = $"Do you really want to delete \"{delSG}\"?";
+                _windowService.OpenWindowDialog(IWindowService.Windows.NotificationBox, _notificationBox, IWindowService.Windows.MainWindow);
 
-                _messageBox.Title = "Delete Savegame";
-                _messageBox.Message = $"Do you really want to delete \"{SelectedSaveGame.Name}\"";
-                _windowService.OpenWindowDialog(IWindowService.Windows.MessageBox, _messageBox, IWindowService.Windows.MainWindow);
-
-                if (!_messageBox.Result) return;
-
+                if (!_notificationBox.Result) return;
+                
                 _directoryService.DeleteSaveGame(SelectedSaveGame);
                 SelectedProfile.SaveGames.Remove(SelectedSaveGame);
 
-                _windowService.NotifierSuccess($"\"{SelectedSaveGame.Name}\" has been deleted.");
+                _windowService.NotifierSuccess($"\"{delSG}\" has been deleted.");
             }
             catch (Exception ex)
             {
-                _windowService.NotifierError($"Something went wrong, while trying to delete the Savegame '{SelectedSaveGame?.Name}' from the filesystem.\r\n{ex.Message}");
+                _windowService.NotifierError($"Something went wrong, while trying to delete the Savegame '{delSG}' from the filesystem.\r\n{ex.Message}");
             }
         }
         private void OpenSaveGame(object obj)
@@ -166,7 +172,7 @@ namespace SaveGameManagerMVVM.Viewmodels
             if (SelectedSaveGame != null)
                 _directoryService.OpenSaveGame(SelectedSaveGame);
         }
-        private void OpenTextDialog(object obj)
+        private void RenameSavegame(object obj)
         {
             if (SelectedSaveGame == null) return;
 
@@ -174,7 +180,8 @@ namespace SaveGameManagerMVVM.Viewmodels
             _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
 
             if (!string.IsNullOrEmpty(_textDialog.Name) && _textDialog.Ok)
-                SelectedSaveGame.Name = _textDialog.Name;
+                _directoryService.RenameSaveGameFolder(SelectedSaveGame, _textDialog.Name);
+                
         }
         private void OpenProfileDialog(object obj)
         {

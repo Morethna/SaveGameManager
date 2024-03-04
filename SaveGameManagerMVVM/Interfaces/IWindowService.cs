@@ -12,7 +12,7 @@ public interface IWindowService
         ProfileDialog,
         MainWindow,
         GitHub,
-        MessageBox
+        NotificationBox
     };
     public void NotifierInformation(string message);
     public void NotifierSuccess(string message);

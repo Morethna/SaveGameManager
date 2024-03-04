@@ -11,4 +11,5 @@ public partial class TextDialog : Window
     {
         InitializeComponent();
     }
+    private void Window_GotFocus(object sender, RoutedEventArgs e) => txtResponse.Focus();
 }

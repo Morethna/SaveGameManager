@@ -125,6 +125,10 @@
           <b:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                  PassEventArgsToCommand="True"/>
         </b:EventTrigger>
+        <b:EventTrigger EventName="MouseDoubleClick">
+          <b:InvokeCommandAction Command="{Binding LoadSaveGameCommand}"
+                                 PassEventArgsToCommand="True"/>
+        </b:EventTrigger>
       </b:Interaction.Triggers>
       <TreeView.ContextMenu>
         <ContextMenu>
@@ -137,7 +141,7 @@
           </MenuItem>
           <MenuItem x:Name="mtRename" 
                     Header="Rename"
-                    Command="{Binding OpenTextDialogCommand, UpdateSourceTrigger=PropertyChanged}">
+                    Command="{Binding RenameSavegameCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/bleistift.png" />
             </MenuItem.Icon>
