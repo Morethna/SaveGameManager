@@ -10,47 +10,34 @@ namespace SaveGameManager.Services
 {
     public class SettingsService : OberservableObject, ISettingsService
     {
-        private bool _replaceEnabled = true;
-        private bool _loadEnabled = true;
-        private bool _deleteEnabled = true;
+        private bool _mainUiEnabled = true;
+        private bool _profileUiEnabled = true;
 
         public SettingsService() { }
-        public bool ReplaceEnabled 
+        public bool MainUiEnabled
         {
-            get => _replaceEnabled;
+            get => _mainUiEnabled;
             set
             {
-                if (_replaceEnabled == value)
+                if (_mainUiEnabled == value)
                     return;
 
-                _replaceEnabled = value;
-                OnPropertyChanged(nameof(ReplaceEnabled));
-            }
-        }
-        public bool LoadEnabled
-        {
-            get => _loadEnabled;
-            set
-            {
-                if (_loadEnabled == value)
-                    return;
-
-                _loadEnabled = value;
-                OnPropertyChanged(nameof(LoadEnabled));
-            }
-        }
-        public bool DeleteEnabled
-        {
-            get => _deleteEnabled;
-            set
-            {
-                if (_deleteEnabled == value)
-                    return;
-
-                _deleteEnabled = value;
-                OnPropertyChanged(nameof(DeleteEnabled));
+                _mainUiEnabled = value;
+                OnPropertyChanged(nameof(MainUiEnabled));
             }
         }
 
+        public bool ProfileUiEnabled
+        {
+            get => _profileUiEnabled;
+            set
+            {
+                if (_profileUiEnabled == value)
+                    return;
+
+                _profileUiEnabled = value;
+                OnPropertyChanged(nameof(ProfileUiEnabled));
+            }
+        }
     }
 }

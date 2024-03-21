@@ -6,27 +6,21 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
 using SaveGameManager.Viewmodels;
+using SaveGameManager.Services;
 
 namespace SaveGameManager.Handler
 {
-    public class DirectoryService : IDirectoryService
+    public class DirectoryService(IDataService dataService, IWindowService windowService, ISettingsService settings) : IDirectoryService
     {
-        private static Random random = new Random();
-        private readonly IDataService _dataService;
-        private readonly IWindowService _windowService;
-
-        #region ctor
-        public DirectoryService(IDataService dataService, IWindowService windowService)
-        {
-            _dataService = dataService;
-            _windowService = windowService;
-        }
-        #endregion
+        private static readonly Random random = new();
 
         #region private properties
         private string SaveGameFolder { get => Path.Combine(GameFolder, "SaveGameManager"); }
-        private string GameFolder { get => _dataService.Config.Gamepath; }
+        private string GameFolder { get => dataService.Config.Gamepath; }
+        private IWindowService WindowService { get; } = windowService;
+        private ISettingsService Settings { get; } = settings;
         #endregion
+
 
         #region private methode
         private void CleanUpSavegame(string folder)
@@ -50,18 +44,56 @@ namespace SaveGameManager.Handler
         #endregion
 
         #region public methods
+
+        public void CheckExistingProfile()
+        {
+            var tmpPath = WindowService.OpenFolderWindow(SaveGameFolder);
+
+            if (string.IsNullOrEmpty(tmpPath)) return;
+
+            if (!Path.Exists(tmpPath))
+            {
+                WindowService.NotifierWarning($"Profilepath \"{tmpPath}\" not found");
+                return;
+            }
+                
+            var directories = Directory.GetDirectories(SaveGameFolder).Where(x => x == tmpPath).FirstOrDefault();
+
+            if (directories is null)
+            {
+                WindowService.NotifierWarning($"Profilepath isn't a subfolder of the SaveGameFolder \"{tmpPath}\"");
+                return;
+            }
+
+            var id = tmpPath.Replace(@$"{SaveGameFolder}\", "");
+
+            if (dataService.Config.Profiles.Any(x => x.Id == id))
+            {
+                WindowService.NotifierWarning($"The profile \"{id}\" is already in the profilelist");
+                return;
+            }
+            var name = $"Imported_{RandomString(5)}";
+            var profil = new Profile
+            {
+                CreationTime = Directory.GetCreationTime(tmpPath).ToString(),
+                Id = id,
+                Name = name
+            };
+
+            dataService.Config.Profiles.Add(profil);
+            dataService.SelectedProfile = profil;
+            Settings.MainUiEnabled = dataService.SelectedProfile != null;
+
+            WindowService.NotifierSuccess($"\"{name}\" imported.");
+        }
+
         public void DeleteProfilePath(Profile profile)
         {
             try
             {
                 var path = Path.Combine(SaveGameFolder, profile.Id);
                 if (Directory.Exists(path))
-                {
-                    foreach (var sg in profile.SaveGames)
-                        DeleteSaveGame(sg);
-
-                    Directory.Delete(path);
-                }
+                    Directory.Delete(path, true);
             }
             catch (Exception ex)
             {

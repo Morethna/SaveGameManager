@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SaveGameManager.Interfaces;
 
-namespace SaveGameManager.Interfaces
+public interface ISettingsService
 {
-    public interface ISettingsService
-    {
-        public bool ReplaceEnabled { get; set; }
-        public bool LoadEnabled { get; set; }
-        public bool DeleteEnabled { get; set; }
-    }
+    public bool ProfileUiEnabled { get; set; }
+    public bool MainUiEnabled { get; set; }
 }

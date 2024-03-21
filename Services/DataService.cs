@@ -10,21 +10,22 @@ using System.Linq;
 namespace SaveGameManager.Services;
 public class DataService : IDataService
 {
-    private Config _config = new Config();
-    private Profile _selectedProfile = new Profile();
+    private Config _config = new();
+    private Profile? _selectedProfile;
     private string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager/profile.json";
     private string _path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager";
 
     //private readonly ILogger<DataService> //_logger;
 
     #region ctor
-    public DataService()
+    public DataService(ISettingsService settings)
     {
-        InitConfig();  
+        Settings = settings;
+        InitConfig();       
     }
     #endregion
 
-    public Profile SelectedProfile
+    public Profile? SelectedProfile
     {
         get => _selectedProfile;
         set
@@ -40,6 +41,7 @@ public class DataService : IDataService
     }
     public Savegame? SelectedSaveGame { get; set; }
     public Config Config { get => _config; }
+    private ISettingsService Settings { get; }
 
     #region internal methods
     internal void InitConfig()
@@ -64,10 +66,13 @@ public class DataService : IDataService
             var text = File.ReadAllText(_filePath);
             _config = JsonConvert.DeserializeObject<Config>(text) ?? new Config();
 
-            _selectedProfile = _config.Profiles.Where(p => p.Id == _config.ActiveProfile).First();
+            if (_config.Profiles.Count > 0)
+                _selectedProfile = _config.Profiles.Where(p => p.Id == _config.ActiveProfile).First();
+
+            Settings.MainUiEnabled = _selectedProfile != null;
 
             if (string.IsNullOrWhiteSpace(_config.Gamepath))
-                return;
+                Settings.ProfileUiEnabled = false;
         }
         catch (Exception ex)
         {

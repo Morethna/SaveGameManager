@@ -67,7 +67,8 @@
               FontSize="12"
               Background="#B2484848"
               SelectedItem= "{Binding SelectedProfile}"
-              ItemsSource="{Binding Config.Profiles}" BorderBrush="{x:Null}">
+              ItemsSource="{Binding Config.Profiles}" BorderBrush="{x:Null}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Margin="2" Text="{Binding Name}"/>
@@ -172,7 +173,8 @@
               Width="60" Height="27"
               FontSize="12"
               Content="Import"
-              Command="{Binding CreateSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
+              Command="{Binding CreateSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>
@@ -185,7 +187,8 @@
               Margin="5,0,0,0"
               FontSize="12"
               Content="Replace"
-              Command="{Binding ReplaceSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
+              Command="{Binding ReplaceSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>
@@ -198,7 +201,8 @@
               Margin="5,0,0,0"
               FontSize="12"
               Content="Load"
-              Command="{Binding LoadSaveGameCommand, UpdateSourceTrigger=PropertyChanged}">
+              Command="{Binding LoadSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>

@@ -1,18 +1,17 @@
 ﻿using SaveGameManager.Core;
 using SaveGameManager.Interfaces;
 using SaveGameManager.Models;
-using System.Collections.Generic;
+using SaveGameManager.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
 
 namespace SaveGameManager.Viewmodels;
 public class ProfileDialogViewModel : ViewModelBase
 {
     private readonly IDataService _dataService;
-    private readonly ISettingsService _settingsService;
+    private ISettingsService _settingsService;
     private readonly IDirectoryService _directoryService;
     private readonly IWindowService _windowService;
     private readonly TextDialogViewModel _textDialog;
@@ -24,8 +23,8 @@ public class ProfileDialogViewModel : ViewModelBase
         IWindowService windowService,
         TextDialogViewModel textDialog)
     {
-        _dataService = dataService;
         _settingsService = settingsService;
+        _dataService = dataService;
         _directoryService = directoryService;
         _windowService = windowService;
         _textDialog = textDialog;
@@ -34,10 +33,12 @@ public class ProfileDialogViewModel : ViewModelBase
         AddProfileCommand = new DelegateCommand(AddProfile);
         EditProfileCommand = new DelegateCommand(EditProfile);
         DeleteProfileCommand = new DelegateCommand(DeleteProfile);
+        AddExistingProfileCommand = new DelegateCommand(AddExistingProfile);
     }
 
     public ICommand BrowseCommand { get; set; }
     public ICommand AddProfileCommand { get; set; }
+    public ICommand AddExistingProfileCommand { get; set; }
     public ICommand EditProfileCommand { get; set; }
     public ICommand DeleteProfileCommand { get; set; }
     public ObservableCollection<Profile> Profiles 
@@ -55,6 +56,18 @@ public class ProfileDialogViewModel : ViewModelBase
 
             _selectedProfile = value;
             OnPropertyChanged(nameof(SelectedProfile));
+        }
+    }
+    public ISettingsService SettingsService
+    {
+        get => _settingsService;
+        set
+        {
+            if (value == _settingsService)
+                return;
+
+            _settingsService = value;
+            OnPropertyChanged(nameof(SettingsService));
         }
     }
 
@@ -75,8 +88,10 @@ public class ProfileDialogViewModel : ViewModelBase
     {
         var tmpPath = _windowService.OpenFolderWindow(Gamepath);
 
-        if (!string.IsNullOrWhiteSpace(tmpPath))
-            Gamepath = tmpPath;
+        if (string.IsNullOrWhiteSpace(tmpPath)) return;
+            
+        Gamepath = tmpPath;
+        SettingsService.ProfileUiEnabled = true;
     }
 
     private void AddProfile(object obj)
@@ -91,9 +106,10 @@ public class ProfileDialogViewModel : ViewModelBase
             _dataService.SelectedProfile = profile;
             _dataService.SaveConfigAsync();
             _directoryService.CreateProfile(profile);
+            SettingsService.MainUiEnabled = _dataService.SelectedProfile != null;
         }
     }
-
+    private void AddExistingProfile(object obj) => _directoryService.CheckExistingProfile();
     private void EditProfile(object obj)
     {
         if (SelectedProfile is null)
@@ -127,8 +143,12 @@ public class ProfileDialogViewModel : ViewModelBase
 
         _dataService.Config.Profiles.Remove(SelectedProfile);
 
-        if (_dataService.SelectedProfile is null)
-            _dataService.SelectedProfile = _dataService.Config.Profiles.First();
+        if (_dataService.Config.Profiles.Count > 0)
+            _dataService.SelectedProfile ??= _dataService.Config.Profiles.First();
+        else
+            _dataService.SelectedProfile = null;
+
+        SettingsService.MainUiEnabled = _dataService.SelectedProfile != null;
 
         _dataService.SaveConfigAsync();
         
