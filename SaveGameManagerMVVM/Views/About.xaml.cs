@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SaveGameManagerMVVM.Views;
+namespace SaveGameManager.Views;
 public partial class About : Window
 {
     public About()

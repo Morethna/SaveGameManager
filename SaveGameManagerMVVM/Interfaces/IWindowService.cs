@@ -1,7 +1,7 @@
-﻿using SaveGameManagerMVVM.Viewmodels;
+﻿using SaveGameManager.Viewmodels;
 using ToastNotifications;
 
-namespace SaveGameManagerMVVM.Interfaces;
+namespace SaveGameManager.Interfaces;
 
 public interface IWindowService
 {

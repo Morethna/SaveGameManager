@@ -1,12 +1,12 @@
-﻿using SaveGameManagerMVVM.Core;
-using SaveGameManagerMVVM.Interfaces;
+﻿using SaveGameManager.Core;
+using SaveGameManager.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SaveGameManagerMVVM.Services
+namespace SaveGameManager.Services
 {
     public class SettingsService : OberservableObject, ISettingsService
     {

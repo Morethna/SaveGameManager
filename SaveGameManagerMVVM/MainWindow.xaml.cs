@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace SaveGameManagerMVVM;
+namespace SaveGameManager;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

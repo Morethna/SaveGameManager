@@ -1,12 +1,12 @@
-﻿using SaveGameManagerMVVM.Core;
-using SaveGameManagerMVVM.Interfaces;
+﻿using SaveGameManager.Core;
+using SaveGameManager.Interfaces;
 using System.Windows;
-using SaveGameManagerMVVM.Models;
+using SaveGameManager.Models;
 using System.Windows.Input;
 using System;
 using System.Diagnostics;
 
-namespace SaveGameManagerMVVM.Viewmodels
+namespace SaveGameManager.Viewmodels
 {
     public class MainViewModel : ViewModelBase
     {

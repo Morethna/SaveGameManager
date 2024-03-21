@@ -1,6 +1,6 @@
-﻿using SaveGameManagerMVVM.Models;
+﻿using SaveGameManager.Models;
 
-namespace SaveGameManagerMVVM.Interfaces;
+namespace SaveGameManager.Interfaces;
 public interface IDataService
 {
     public Config Config { get; }

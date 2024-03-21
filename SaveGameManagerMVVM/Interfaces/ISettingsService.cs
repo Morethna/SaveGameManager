@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SaveGameManagerMVVM.Interfaces
+namespace SaveGameManager.Interfaces
 {
     public interface ISettingsService
     {

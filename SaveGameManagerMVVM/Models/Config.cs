@@ -1,8 +1,8 @@
-﻿using SaveGameManagerMVVM.Core;
+﻿using SaveGameManager.Core;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SaveGameManagerMVVM.Models;
+namespace SaveGameManager.Models;
 public class Config : OberservableObject
 {
     private string _gamepath = string.Empty;

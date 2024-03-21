@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SaveGameManagerMVVM.Views;
+namespace SaveGameManager.Views;
 
 /// <summary>
 /// Interaction logic for MessageBox.xaml

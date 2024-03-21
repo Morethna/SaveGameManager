@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SaveGameManager.Handler;
-using SaveGameManagerMVVM.Interfaces;
-using SaveGameManagerMVVM.Services;
-using SaveGameManagerMVVM.Viewmodels;
+using SaveGameManager.Interfaces;
+using SaveGameManager.Services;
+using SaveGameManager.Viewmodels;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace SaveGameManagerMVVM
+namespace SaveGameManager
 {
     /// <summary>
     /// Interaction logic for App.xaml

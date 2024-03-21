@@ -1,11 +1,11 @@
-﻿using SaveGameManagerMVVM.Models;
-using SaveGameManagerMVVM.Interfaces;
+﻿using SaveGameManager.Models;
+using SaveGameManager.Interfaces;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
-using SaveGameManagerMVVM.Viewmodels;
+using SaveGameManager.Viewmodels;
 
 namespace SaveGameManager.Handler
 {

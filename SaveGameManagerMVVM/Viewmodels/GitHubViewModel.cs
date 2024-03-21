@@ -1,8 +1,8 @@
-﻿using SaveGameManagerMVVM.Core;
+﻿using SaveGameManager.Core;
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace SaveGameManagerMVVM.Viewmodels;
+namespace SaveGameManager.Viewmodels;
 
 public class GitHubViewModel : ViewModelBase
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SaveGameManagerMVVM.Core;
+namespace SaveGameManager.Core;
 
 internal class DelegateCommand : ICommand
 {

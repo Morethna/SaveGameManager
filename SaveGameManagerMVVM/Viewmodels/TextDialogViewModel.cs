@@ -1,9 +1,9 @@
-﻿using SaveGameManagerMVVM.Interfaces;
+﻿using SaveGameManager.Interfaces;
 using System.Windows.Forms;
 using System.Windows.Input;
-using SaveGameManagerMVVM.Core;
+using SaveGameManager.Core;
 
-namespace SaveGameManagerMVVM.Viewmodels;
+namespace SaveGameManager.Viewmodels;
 
 public class TextDialogViewModel : ViewModelBase
 {

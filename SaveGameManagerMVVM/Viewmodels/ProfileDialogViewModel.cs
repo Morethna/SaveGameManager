@@ -1,6 +1,6 @@
-﻿using SaveGameManagerMVVM.Core;
-using SaveGameManagerMVVM.Interfaces;
-using SaveGameManagerMVVM.Models;
+﻿using SaveGameManager.Core;
+using SaveGameManager.Interfaces;
+using SaveGameManager.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace SaveGameManagerMVVM.Viewmodels;
+namespace SaveGameManager.Viewmodels;
 public class ProfileDialogViewModel : ViewModelBase
 {
     private readonly IDataService _dataService;

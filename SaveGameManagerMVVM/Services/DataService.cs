@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SaveGameManagerMVVM.Models;
-using SaveGameManagerMVVM.Core;
-using SaveGameManagerMVVM.Interfaces;
+using SaveGameManager.Models;
+using SaveGameManager.Core;
+using SaveGameManager.Interfaces;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace SaveGameManagerMVVM.Services;
+namespace SaveGameManager.Services;
 public class DataService : IDataService
 {
     private Config _config = new Config();

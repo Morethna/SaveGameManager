@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SaveGameManagerMVVM.Core
+namespace SaveGameManager.Core
 {
     public class OberservableObject : INotifyPropertyChanged
     {

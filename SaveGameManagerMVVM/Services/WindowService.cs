@@ -1,6 +1,6 @@
-﻿using SaveGameManagerMVVM.Interfaces;
-using SaveGameManagerMVVM.Viewmodels;
-using SaveGameManagerMVVM.Views;
+﻿using SaveGameManager.Interfaces;
+using SaveGameManager.Viewmodels;
+using SaveGameManager.Views;
 using System;
 using System.IO;
 using System.Linq;
@@ -10,7 +10,7 @@ using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
 
-namespace SaveGameManagerMVVM.Services;
+namespace SaveGameManager.Services;
 
 public class WindowService : IWindowService
 {

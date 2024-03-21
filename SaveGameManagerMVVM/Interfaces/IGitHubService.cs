@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace SaveGameManagerMVVM.Interfaces;
+namespace SaveGameManager.Interfaces;
 
 public interface IGitHubService
 {

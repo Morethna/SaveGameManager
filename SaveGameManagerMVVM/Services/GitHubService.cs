@@ -1,6 +1,6 @@
 ﻿using Octokit;
-using SaveGameManagerMVVM.Interfaces;
-using SaveGameManagerMVVM.Viewmodels;
+using SaveGameManager.Interfaces;
+using SaveGameManager.Viewmodels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SaveGameManagerMVVM.Services;
+namespace SaveGameManager.Services;
 
 public class GitHubService : IGitHubService
 {

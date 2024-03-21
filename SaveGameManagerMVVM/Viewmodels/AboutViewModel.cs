@@ -1,11 +1,11 @@
-﻿using SaveGameManagerMVVM.Core;
-using SaveGameManagerMVVM.Resources;
+﻿using SaveGameManager.Core;
+using SaveGameManager.Resources;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
-namespace SaveGameManagerMVVM.Viewmodels;
+namespace SaveGameManager.Viewmodels;
 
 public class AboutViewModel : ViewModelBase
 {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SaveGameManagerMVVM.Resources {
+namespace SaveGameManager.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SaveGameManagerMVVM.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SaveGameManagerMVVM.Resources.Hyperlinks", typeof(Hyperlinks).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SaveGameManager.Resources.Hyperlinks", typeof(Hyperlinks).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

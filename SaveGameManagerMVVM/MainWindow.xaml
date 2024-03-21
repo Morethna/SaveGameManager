@@ -1,16 +1,16 @@
-﻿<Window x:Name="wdMain" x:Class="SaveGameManagerMVVM.MainWindow"
+﻿<Window x:Name="wdMain" x:Class="SaveGameManager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
-        xmlns:local="clr-namespace:SaveGameManagerMVVM"
+        xmlns:local="clr-namespace:SaveGameManager"
         mc:Ignorable="d"
         Title="SaveGameManager - Lies of P" 
         Height="650" Width="500" 
         MinHeight="350" MinWidth="300"
-        WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow"
+        WindowStartupLocation="CenterScreen"
         ui:WindowHelper.UseModernWindowStyle="True">
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Loaded">
@@ -40,7 +40,7 @@
       </Setter>
     </Style>
   </Window.Resources>
-  <Grid UseLayoutRounding="True">
+  <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="50"/>
       <ColumnDefinition Width="*"/>

@@ -1,6 +1,6 @@
-﻿using SaveGameManagerMVVM.Core;
+﻿using SaveGameManager.Core;
 
-namespace SaveGameManagerMVVM.Models;
+namespace SaveGameManager.Models;
 public class Savegame : OberservableObject
 {
     private string _name = string.Empty;

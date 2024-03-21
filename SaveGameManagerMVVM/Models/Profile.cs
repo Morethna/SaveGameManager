@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using SaveGameManagerMVVM.Core;
+using SaveGameManager.Core;
 using System;
 using System.Collections.ObjectModel;
 
-namespace SaveGameManagerMVVM.Models;
+namespace SaveGameManager.Models;
 public class Profile : OberservableObject
 {
     private string _name = string.Empty;
