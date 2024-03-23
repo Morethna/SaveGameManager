@@ -3,6 +3,7 @@ using SaveGameManager.Handler;
 using SaveGameManager.Interfaces;
 using SaveGameManager.Services;
 using SaveGameManager.Viewmodels;
+using SaveGameManager.Views;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,7 +33,8 @@ namespace SaveGameManager
             services.AddSingleton<AboutViewModel>();
             services.AddSingleton<ProfileDialogViewModel>();
             services.AddSingleton<GitHubViewModel>();
-            services.AddSingleton<NotificationBoxViewModel>();
+            services.AddSingleton<NotifyBoxYesNoViewModel>();
+            services.AddSingleton<NotifyBoxViewModel>();
 
             services.AddSingleton(sp => new MainWindow()
             {
@@ -59,7 +61,17 @@ namespace SaveGameManager
         }
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            var windowService = _serviceProvider.GetService<IWindowService>();
+            var viewModel = _serviceProvider.GetService<NotifyBoxViewModel>();
+
+            if (windowService != null && viewModel != null) 
+            {
+                viewModel.Message = e.Exception.Message;
+                viewModel.Title = "Error";
+                windowService.OpenWindow(viewModel);
+            }
+            else
+                MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

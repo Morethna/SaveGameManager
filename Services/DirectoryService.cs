@@ -6,47 +6,54 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
 using SaveGameManager.Viewmodels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using SaveGameManager.Services;
 
-namespace SaveGameManager.Handler
+namespace SaveGameManager.Handler;
+public class DirectoryService(IDataService dataService, IWindowService windowService, ISettingsService settings, NotifyBoxViewModel notifyBox) : IDirectoryService
 {
-    public class DirectoryService(IDataService dataService, IWindowService windowService, ISettingsService settings) : IDirectoryService
+    private static readonly Random random = new();
+
+    #region private properties
+    private string SaveGameFolder { get => Path.Combine(GameFolder, "SaveGameManager"); }
+    private string GameFolder { get => dataService.Config.Gamepath; }
+    private IWindowService WindowService { get; } = windowService;
+    private ISettingsService Settings { get; } = settings;
+    #endregion
+
+
+    #region private methode
+    private void CleanUpSavegame(string folder)
     {
-        private static readonly Random random = new();
-
-        #region private properties
-        private string SaveGameFolder { get => Path.Combine(GameFolder, "SaveGameManager"); }
-        private string GameFolder { get => dataService.Config.Gamepath; }
-        private IWindowService WindowService { get; } = windowService;
-        private ISettingsService Settings { get; } = settings;
-        #endregion
-
-
-        #region private methode
-        private void CleanUpSavegame(string folder)
+        if (Directory.Exists(folder))
         {
-            if (Directory.Exists(folder))
+            foreach (var filename in Directory.GetFiles(folder))
             {
-                foreach (var filename in Directory.GetFiles(folder))
-                {
-                    File.Delete(filename);
-                }
+                File.Delete(filename);
             }
         }
+    }
 
-        private static string RandomString(int length)
+    private static string RandomString(int length)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
+    #endregion
+
+    #region public methods
+
+    public void CheckExistingProfile()
+    {
+        try
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        #endregion
-
-        #region public methods
-
-        public void CheckExistingProfile()
-        {
+            if (!Directory.Exists(SaveGameFolder))
+            {
+                WindowService.NotifierWarning($"Savegamefolder \"{SaveGameFolder}\" not found");
+                return;
+            }
             var tmpPath = WindowService.OpenFolderWindow(SaveGameFolder);
 
             if (string.IsNullOrEmpty(tmpPath)) return;
@@ -56,7 +63,7 @@ namespace SaveGameManager.Handler
                 WindowService.NotifierWarning($"Profilepath \"{tmpPath}\" not found");
                 return;
             }
-                
+
             var directories = Directory.GetDirectories(SaveGameFolder).Where(x => x == tmpPath).FirstOrDefault();
 
             if (directories is null)
@@ -86,29 +93,40 @@ namespace SaveGameManager.Handler
 
             WindowService.NotifierSuccess($"\"{name}\" imported.");
         }
-
-        public void DeleteProfilePath(Profile profile)
+        catch (Exception ex)
         {
-            try
-            {
-                var path = Path.Combine(SaveGameFolder, profile.Id);
-                if (Directory.Exists(path))
-                    Directory.Delete(path, true);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Something went wrong, while trying to delete profile '{profile.Name}' on the filesystem.\r\n{ex.Message}");
-            }
+            notifyBox.Message = $"Something went wrong, while linking an existing profile.\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
         }
-        public void CreateSaveGame(Profile profile)
-        {
-            var name = RandomString(8);
+    }
 
+    public void DeleteProfilePath(Profile profile)
+    {
+        try
+        {
+            var path = Path.Combine(SaveGameFolder, profile.Id);
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
+        }
+        catch (Exception ex)
+        {
+            notifyBox.Message = $"Something went wrong, while deleting profile \"{profile.Name}\".\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
+        }
+    }
+    public void CreateSaveGame(Profile profile)
+    {
+        try
+        {
             if (string.IsNullOrEmpty(GameFolder))
             {
-                MessageBox.Show("Select a gamefolder, please");
+                WindowService.NotifierWarning("Select a gamefolder, please");
                 return;
             }
+
+            var name = RandomString(8);
 
             var saveGamePath = Path.Combine(SaveGameFolder, profile.Id, name);
             Directory.CreateDirectory(saveGamePath);
@@ -119,29 +137,41 @@ namespace SaveGameManager.Handler
                 File.Copy(filename, dstFilename);
             }
             profile.SaveGames.Add(new Savegame { Name = name, Path = saveGamePath });
+
+            WindowService.NotifierSuccess($"Imported savegame");
         }
-        public void CreateProfile(Profile profile)
+        catch (Exception ex)
         {
-            try
+            notifyBox.Message = $"Something went wrong, while creating a new savegame.\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
+       }     
+    }
+    public void CreateProfile(Profile profile)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(GameFolder))
             {
-                if (string.IsNullOrEmpty(GameFolder))
-                {
-                    MessageBox.Show("Select a gamefolder, please");
-                    return;
-                }
-
-                var profilePath = Path.Combine(SaveGameFolder, profile.Id);
-                Directory.CreateDirectory(profilePath);
-
+                WindowService.NotifierWarning("Select a gamefolder, please");
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Something went wrong, while trying to create the Profile '{profile.Name}' on the filesystem.\r\n{ex.Message}");
-            }
+
+            var profilePath = Path.Combine(SaveGameFolder, profile.Id);
+            Directory.CreateDirectory(profilePath);
+
         }
-        public void DeleteSaveGame(Savegame savegame)
+        catch (Exception ex)
         {
-
+            notifyBox.Message = $"Something went wrong, while creating the profile \"{profile.Name}\".\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
+        }
+    }
+    public void DeleteSaveGame(Savegame savegame)
+    {
+        try
+        {
             if (Directory.Exists(savegame.Path))
             {
                 foreach (string file in Directory.GetFiles(savegame.Path))
@@ -150,9 +180,17 @@ namespace SaveGameManager.Handler
                 }
                 Directory.Delete(savegame.Path);
             }
-
         }
-        public void LoadSaveGame(Savegame savegame)
+        catch (Exception ex)
+        {
+            notifyBox.Message = $"Something went wrong, while deleting the savegame \"{savegame.Name}\".\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
+        }
+    }
+    public void LoadSaveGame(Savegame savegame)
+    {
+        try
         {
             CleanUpSavegame(GameFolder);
             if (Directory.Exists(savegame.Path))
@@ -162,86 +200,98 @@ namespace SaveGameManager.Handler
                     var dstFilename = Path.Combine(GameFolder, filename.Replace($@"{savegame.Path}\", ""));
                     File.Copy(filename, dstFilename, true);
                 }
+                WindowService.NotifierSuccess($"\"{savegame.Name}\" has been loaded.");
             }
             else
                 throw new DirectoryNotFoundException($"Directory {savegame.Path} was not found");
-
         }
-        public void RenameSaveGameFolder(Savegame savegame, string newName)
+        catch (Exception ex)
         {
-            try
-            {
-                var newPath = savegame.Path.Replace(savegame.Name, newName);
-
-                if (Directory.Exists(newPath))
-                {
-                    MessageBox.Show("This savegame already exists.");
-                    return;
-                }
-                if (Directory.Exists(savegame.Path))
-                {
-                    Directory.Move(savegame.Path, newPath);
-                }
-                savegame.Path = newPath;
-                savegame.Name = newName;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Something went wrong, while rename the Savegame '{savegame.Name}'.\r\n{ex.Message}");
-            }
+            notifyBox.Message = $"Something went wrong, while loading the savegame \"{savegame.Name}\".\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
         }
-        public void LoadProfile(Profile profile)
+    }
+    public void RenameSaveGameFolder(Savegame savegame, string newName)
+    {
+        try
         {
-            try
-            {
-                if (profile is null)
-                    return;
+            var newPath = savegame.Path.Replace(savegame.Name, newName);
 
-                var saveGamePath = Path.Combine(SaveGameFolder, profile.Id);
-                if (Directory.Exists(saveGamePath))
-                {
-                    foreach (string d in Directory.GetDirectories(saveGamePath))
-                    {
-                        var p = profile.SaveGames.Where(x => x.Path == d);
-                        if (p.Count() == 0)
-                            profile.SaveGames.Add(new Savegame { Name = d.Replace($@"{saveGamePath}\", ""), Path = d });
-                    }
-                }
-            }
-            catch (Exception ex)
+            if (Directory.Exists(newPath))
             {
-                MessageBox.Show($"Something went wrong, while loading the profile '{profile.Name}'.\r\n{ex.Message}");
+                WindowService.NotifierWarning("This savegame already exists.");
+                return;
             }
-        }
-        public void ReplaceSavegame(Savegame savegame)
-        {
-            CleanUpSavegame(savegame.Path);
             if (Directory.Exists(savegame.Path))
             {
-                foreach (var filename in Directory.GetFiles(GameFolder))
-                {
-                    var dstFilename = filename.Replace(GameFolder, savegame.Path);
-                    File.Copy(filename, dstFilename, true);
-                }
+                Directory.Move(savegame.Path, newPath);
             }
+            savegame.Path = newPath;
+            savegame.Name = newName;
         }
-        public void OpenSaveGame(Savegame savegame)
+        catch (Exception ex)
         {
-            try
-            {
-                if (!Directory.Exists(savegame.Path))
-                {
-                    MessageBox.Show($"Savegame doesn't exist on the filesystem'. Path: \"{savegame.Path}\"");
-                    return;
-                }
+            notifyBox.Message = $"Something went wrong, while renaming the Savegame \"{newName}\".\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
+        }
+    }
+    public void LoadProfile(Profile profile)
+    {
+        try
+        {
+            if (profile is null)
+                return;
 
-                Process.Start("explorer.exe", savegame.Path);
-            }
-            catch (Exception ex)
+            var saveGamePath = Path.Combine(SaveGameFolder, profile.Id);
+            if (Directory.Exists(saveGamePath))
             {
-                MessageBox.Show($"Something went wrong, while trying to add a profile to select the gamefolder'.\r\n{ex.Message}");
+                foreach (string d in Directory.GetDirectories(saveGamePath))
+                {
+                    var p = profile.SaveGames.Where(x => x.Path == d);
+                    if (p.Count() == 0)
+                        profile.SaveGames.Add(new Savegame { Name = d.Replace($@"{saveGamePath}\", ""), Path = d });
+                }
             }
         }
-        #endregion
+        catch (Exception ex)
+        {
+            notifyBox.Message = $"Something went wrong, while loading the profile \"{profile.Name}\".\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
+        }
     }
+    public void ReplaceSavegame(Savegame savegame)
+    {
+        CleanUpSavegame(savegame.Path);
+        if (Directory.Exists(savegame.Path))
+        {
+            foreach (var filename in Directory.GetFiles(GameFolder))
+            {
+                var dstFilename = filename.Replace(GameFolder, savegame.Path);
+                File.Copy(filename, dstFilename, true);
+            }
+        }
+    }
+    public void OpenSaveGame(Savegame savegame)
+    {
+        try
+        {
+            if (!Directory.Exists(savegame.Path))
+            {
+                WindowService.NotifierWarning($"Savegame doesn't exist on the filesystem'. Path: \"{savegame.Path}\"");
+                return;
+            }
+
+            Process.Start("explorer.exe", savegame.Path);
+        }
+        catch (Exception ex)
+        {
+            notifyBox.Message = $"Something went wrong, while trying to open the savegame folder \"{savegame.Path}\".\r\n{ex.Message}";
+            notifyBox.Title = "Error";
+            WindowService.OpenWindow(notifyBox);
+        }
+    }
+    #endregion
 }

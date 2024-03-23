@@ -7,7 +7,4 @@ public interface IDataService
     public Profile SelectedProfile { get; set; }
     public Savegame? SelectedSaveGame { get; set; }
     public void SaveConfigAsync();
-    public void SetGamefolder(string gamePath);
-    public void EditProfile(Profile profile);
-    public void DeleteProfile(Profile profile);
 }

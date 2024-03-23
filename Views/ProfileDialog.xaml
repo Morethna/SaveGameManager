@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:SaveGameManager.Views"
         mc:Ignorable="d"
         Title="Profile Configuration" 
-        Height="300" MinHeight="200" 
+        Height="350" MinHeight="250" 
         Width="800" MinWidth="350"
         WindowStartupLocation="CenterScreen"  
         ui:WindowHelper.UseModernWindowStyle="True">

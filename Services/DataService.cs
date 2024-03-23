@@ -1,26 +1,29 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SaveGameManager.Models;
-using SaveGameManager.Core;
 using SaveGameManager.Interfaces;
 using System;
 using System.IO;
 using System.Linq;
+using SaveGameManager.Viewmodels;
 
 namespace SaveGameManager.Services;
 public class DataService : IDataService
 {
     private Config _config = new();
     private Profile? _selectedProfile;
-    private string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager/profile.json";
-    private string _path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager";
+    private readonly string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager/profile.json";
+    private readonly string _path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager";
+    private readonly IWindowService _windowService;
+    private readonly NotifyBoxViewModel _notifyBox;
 
     //private readonly ILogger<DataService> //_logger;
 
     #region ctor
-    public DataService(ISettingsService settings)
+    public DataService(ISettingsService settings, IWindowService windowService, NotifyBoxViewModel notifyBox)
     {
         Settings = settings;
+        _windowService = windowService;
+        _notifyBox = notifyBox;
         InitConfig();       
     }
     #endregion
@@ -70,73 +73,18 @@ public class DataService : IDataService
                 _selectedProfile = _config.Profiles.Where(p => p.Id == _config.ActiveProfile).First();
 
             Settings.MainUiEnabled = _selectedProfile != null;
-
-            if (string.IsNullOrWhiteSpace(_config.Gamepath))
-                Settings.ProfileUiEnabled = false;
+            Settings.ProfileUiEnabled = !string.IsNullOrWhiteSpace(_config.Gamepath);
         }
         catch (Exception ex)
         {
-            //_logger.LogError($"Error while trying to initialize the configfile. File: \"{_filePath}\"", ex);
+            _notifyBox.Message = $"Something went wrong, while initializing the profil \"{_filePath}\".\r\n{ex.Message}";
+            _notifyBox.Title = "Error";
+            _windowService.OpenWindow(_notifyBox);
         }
     }
     #endregion
 
     #region public methods
-    public async void SaveConfigAsync()
-    {
-        await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(_config));
-    }
-
-    public void SetGamefolder(string gamePath)
-    {
-        try
-        {
-            _config.Gamepath = gamePath;
-            SaveConfigAsync();
-            //_logger.LogDebug($"Gamepath has been changed. Path: Gamepath: \"{gamePath}\"");
-        }
-        catch (Exception ex)
-        {
-            //_logger.LogError($"Error while trying to set the gamepath. Gamepath: \"{gamePath}\"", ex);
-        }
-    }
-
-    public void EditProfile(Profile profile)
-    {
-        try
-        {
-            var p = _config.Profiles.Where(p => p.Id == profile.Id).FirstOrDefault();
-
-            if (p == null) return;
-
-            _config.Profiles.Remove(p);
-            _config.Profiles.Add(profile);
-            SaveConfigAsync();
-            //_logger.LogDebug($"Profile has been edited. Old: \"{p.Name}\" -> New: \"{profile.Name}\"");
-        }
-        catch (Exception ex)
-        {
-            //_logger.LogError($"Error while trying to edit a Profile. Profile: \"{profile.Name}\"", ex);
-        }
-    }
-
-    public void DeleteProfile(Profile profile)
-    {
-        try
-        {
-            var p = _config.Profiles.Where(p => p.Id == profile.Id).FirstOrDefault();
-
-            if (p == null) return;
-
-            _config.Profiles.Remove(p);
-            SaveConfigAsync();
-            //_logger.LogDebug($"Profile has been edited. Old: \"{p.Name}\" -> New: \"{profile.Name}\"");
-        }
-        catch (Exception ex)
-        {
-            //_logger.LogError($"Error while trying to edit a Profile. Profile: \"{profile.Name}\"", ex);
-        }
-    }
-
+    public async void SaveConfigAsync() => await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(_config));
     #endregion
 }

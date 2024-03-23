@@ -5,13 +5,13 @@ using SaveGameManager.Core;
 
 namespace SaveGameManager.Viewmodels;
 
-public class NotificationBoxViewModel : ViewModelBase
+public class NotifyBoxYesNoViewModel : ViewModelBase
 {
     private readonly IWindowService _windowService;
     private string _message = string.Empty;
     private string _title = string.Empty;
 
-    public NotificationBoxViewModel(IWindowService windowService)
+    public NotifyBoxYesNoViewModel(IWindowService windowService)
     {
         _windowService = windowService;
         SetResultCommand = new DelegateCommand(SetResult);
@@ -47,6 +47,6 @@ public class NotificationBoxViewModel : ViewModelBase
     private void SetResult(object obj)
     {
         Result = true;
-        _windowService.CloseWindow(IWindowService.Windows.NotificationBox);
+        _windowService.CloseWindow(this);
     }
 }

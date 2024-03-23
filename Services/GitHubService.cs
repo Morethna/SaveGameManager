@@ -47,7 +47,7 @@ public class GitHubService : IGitHubService
             _gitHubView.CurrentVersion = localVersion.ToString();
             _gitHubView.NewVersion = latestGitHubVersion.ToString();
             _gitHubView.Url = release.HtmlUrl;
-            _windowService.OpenWindow(IWindowService.Windows.GitHub, _gitHubView);
+            _windowService.OpenWindow(_gitHubView);
         }
     }
 }

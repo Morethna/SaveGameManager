@@ -2,10 +2,12 @@
 using SaveGameManager.Interfaces;
 using SaveGameManager.Models;
 using SaveGameManager.Services;
+using SaveGameManager.Views;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SaveGameManager.Viewmodels;
 public class ProfileDialogViewModel : ViewModelBase
@@ -15,19 +17,22 @@ public class ProfileDialogViewModel : ViewModelBase
     private readonly IDirectoryService _directoryService;
     private readonly IWindowService _windowService;
     private readonly TextDialogViewModel _textDialog;
+    private readonly NotifyBoxYesNoViewModel _notifyBoxYesNo;
     private Profile? _selectedProfile;
 
     public ProfileDialogViewModel(IDataService dataService,
         ISettingsService settingsService,
         IDirectoryService directoryService,
         IWindowService windowService,
-        TextDialogViewModel textDialog)
+        TextDialogViewModel textDialog,
+        NotifyBoxYesNoViewModel notifyBoxYesNo)
     {
         _settingsService = settingsService;
         _dataService = dataService;
         _directoryService = directoryService;
         _windowService = windowService;
         _textDialog = textDialog;
+        _notifyBoxYesNo = notifyBoxYesNo;
 
         BrowseCommand = new DelegateCommand(Browse);
         AddProfileCommand = new DelegateCommand(AddProfile);
@@ -41,7 +46,7 @@ public class ProfileDialogViewModel : ViewModelBase
     public ICommand AddExistingProfileCommand { get; set; }
     public ICommand EditProfileCommand { get; set; }
     public ICommand DeleteProfileCommand { get; set; }
-    public ObservableCollection<Profile> Profiles 
+    public ObservableCollection<Profile> Profiles
     {
         get => _dataService.Config.Profiles;
     }
@@ -49,7 +54,7 @@ public class ProfileDialogViewModel : ViewModelBase
     public Profile? SelectedProfile
     {
         get => _selectedProfile;
-        set 
+        set
         {
             if (_selectedProfile == value)
                 return;
@@ -71,33 +76,39 @@ public class ProfileDialogViewModel : ViewModelBase
         }
     }
 
-    public string Gamepath 
-    { 
-        get  => _dataService.Config.Gamepath;
-        set 
+    public string Gamepath
+    {
+        get => _dataService.Config.Gamepath;
+        set
         {
             if (_dataService.Config.Gamepath == value)
                 return;
 
             _dataService.Config.Gamepath = value;
             OnPropertyChanged(nameof(Gamepath));
-        } 
+        }
     }
 
-    private void Browse (object obj)
+    private void Browse(object obj)
     {
         var tmpPath = _windowService.OpenFolderWindow(Gamepath);
 
         if (string.IsNullOrWhiteSpace(tmpPath)) return;
-            
+
         Gamepath = tmpPath;
         SettingsService.ProfileUiEnabled = true;
     }
 
     private void AddProfile(object obj)
     {
+        if (string.IsNullOrEmpty(Gamepath))
+        {
+            _windowService.NotifierWarning("Select a gamefolder, please");
+            return;
+        }           
+
         _textDialog.Name = string.Empty;
-        _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.MainWindow);
+        _windowService.OpenWindowDialog(_textDialog, this);
 
         if (!string.IsNullOrEmpty(_textDialog.Name))
         {
@@ -109,7 +120,16 @@ public class ProfileDialogViewModel : ViewModelBase
             SettingsService.MainUiEnabled = _dataService.SelectedProfile != null;
         }
     }
-    private void AddExistingProfile(object obj) => _directoryService.CheckExistingProfile();
+    private void AddExistingProfile(object obj)
+    {
+        if (string.IsNullOrEmpty(Gamepath))
+        {
+            _windowService.NotifierWarning("Select a gamefolder, please");
+            return;
+        }
+
+        _directoryService.CheckExistingProfile();
+    }
     private void EditProfile(object obj)
     {
         if (SelectedProfile is null)
@@ -119,7 +139,7 @@ public class ProfileDialogViewModel : ViewModelBase
         }
 
         _textDialog.Name = SelectedProfile.Name;
-        _windowService.OpenWindowDialog(IWindowService.Windows.Textdialog, _textDialog, IWindowService.Windows.ProfileDialog);
+        _windowService.OpenWindowDialog(_textDialog, this);
 
         if (!string.IsNullOrEmpty(_textDialog.Name) && _textDialog.Ok)
         {
@@ -131,13 +151,15 @@ public class ProfileDialogViewModel : ViewModelBase
     {
         if (SelectedProfile is null)
         {
-            MessageBox.Show("Select a profile, please.");
+            _windowService.NotifierWarning("Select a profile, please.");
             return;
         }
 
-        if (MessageBox.Show($"Do you really want to delete the Profile \"{SelectedProfile.Name}\"",
-            "Delete Profile", MessageBoxButton.YesNo) == MessageBoxResult.No)
-            return;
+        _notifyBoxYesNo.Message = $"Do you really want to delete the Profile \"{SelectedProfile.Name}\"";
+        _notifyBoxYesNo.Title = "Delete Profile";
+        _windowService.OpenWindowDialog(_notifyBoxYesNo, this);
+
+        if (!_notifyBoxYesNo.Result) return;
 
         _directoryService.DeleteProfilePath(SelectedProfile);
 

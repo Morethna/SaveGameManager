@@ -39,6 +39,6 @@ public class TextDialogViewModel : ViewModelBase
             return;
         }
         Ok = true;
-        _windowService.CloseWindow(IWindowService.Windows.Textdialog);
+        _windowService.CloseWindow(this);
     }
 }

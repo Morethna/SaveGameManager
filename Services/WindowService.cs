@@ -14,7 +14,7 @@ namespace SaveGameManager.Services;
 
 public class WindowService : IWindowService
 {
-    Notifier? _notifier;
+    readonly Notifier? _notifier;
     public WindowService()
     {
         _notifier = new Notifier(cfg =>
@@ -53,39 +53,41 @@ public class WindowService : IWindowService
         return string.Empty;
     }
 
-    public void OpenWindowDialog(IWindowService.Windows win, ViewModelBase viewModel, IWindowService.Windows parent)
+    public void OpenWindowDialog<T>(T viewModel, ViewModelBase parent)
     {
-        var window = GetView(win);
+        var window = GetView(viewModel);
         ArgumentNullException.ThrowIfNull(window, nameof(window));
         window.DataContext = viewModel;
-        window.Owner = GetView(parent, true);
+        window.Owner = GetView(parent);
         window.ShowDialog();
     }
 
-    public void OpenWindow(IWindowService.Windows win, ViewModelBase viewModel)
+    public void OpenWindow<T>(T viewModel)
     {
-        var window = GetView(win);
+        var window = GetView(viewModel);
         ArgumentNullException.ThrowIfNull(window, nameof(window));
         window.DataContext = viewModel;
         window.Show();
+        window.Focus();
     }
 
-    public void CloseWindow(IWindowService.Windows win)
+    public void CloseWindow<T>(T viewModel)
     {
-        var window = GetView(win, true);
+        var window = GetView(viewModel);
         window?.Close();
     }
 
-    internal static Window? GetViewInstance<T>() where T : Window, new() => Application.Current.Windows.OfType<T>().FirstOrDefault(x => x.IsActive);
-    internal static Window? GetView(IWindowService.Windows windows, bool open = false) => windows switch
+    internal static Window? GetViewInstance<T>() where T : Window, new() => Application.Current.Windows.OfType<T>().FirstOrDefault();
+    internal static Window? GetView<T>(T viewModel) => viewModel switch
     {
 
-        IWindowService.Windows.Textdialog => open ? GetViewInstance<TextDialog>() : new TextDialog(),
-        IWindowService.Windows.NotificationBox => open ? GetViewInstance<NotificationBox>() : new NotificationBox(),
-        IWindowService.Windows.About => open ? GetViewInstance<About>() : new About(),
-        IWindowService.Windows.ProfileDialog => open ? GetViewInstance<ProfileDialog>() : new ProfileDialog(),
-        IWindowService.Windows.GitHub => open ? GetViewInstance<GitHub>() : new GitHub(),
-        IWindowService.Windows.MainWindow => GetViewInstance<MainWindow>(),
+        TextDialogViewModel => GetViewInstance<TextDialog>() ?? new TextDialog(),
+        NotifyBoxYesNoViewModel => GetViewInstance<NotifyBoxYesNo>() ?? new NotifyBoxYesNo(),
+        NotifyBoxViewModel => GetViewInstance<NotifyBox>() ?? new NotifyBox(),
+        AboutViewModel => GetViewInstance<About>() ?? new About(),
+        ProfileDialogViewModel => GetViewInstance<ProfileDialog>() ?? new ProfileDialog(),
+        GitHubViewModel => GetViewInstance<GitHub>() ?? new GitHub(),
+        MainViewModel => GetViewInstance<MainWindow>() ?? new MainWindow(),
         _ => throw new NotImplementedException()
     };
 }
