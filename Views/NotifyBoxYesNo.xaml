@@ -6,10 +6,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d"
-        Title="{Binding Title}" ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen" ShowInTaskbar="False"
-        ui:WindowHelper.UseModernWindowStyle="True"
-        SizeToContent="Width" Height="150" GotFocus="wdDialog_GotFocus">
+        Title="{Binding Title}"
+        WindowStartupLocation="CenterScreen" 
+        ResizeMode="NoResize" SizeToContent="Width" Height="150" MaxWidth="500"
+        ui:WindowHelper.UseModernWindowStyle="True">
   <Window.Resources>
     <Style TargetType="Border">
       <Setter Property="CornerRadius" Value="5"/>
@@ -24,20 +24,28 @@
       <ColumnDefinition Width="40" />
       <ColumnDefinition />
     </Grid.ColumnDefinitions>
-    <Rectangle Fill="#FF272727" Grid.Row="0" Grid.ColumnSpan="2"/>
+    <Rectangle Grid.ColumnSpan="2" Fill="#FF292929"/>
     <Image Grid.Row="0"
-          Grid.Column="0"
-          Source="/Resources/P.ico"  
-          Width="21" Height="40"
+           Grid.Column="0"
+           Source="/Resources/P.ico"  
+           Width="21" Height="40"
            Margin="10" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-    <TextBlock Grid.Row="0"
-          Grid.Column="1"
-          MaxWidth="400"
-          Margin="5"
-               TextWrapping="Wrap"
-              ScrollViewer.CanContentScroll="True"
-          Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-    <Rectangle Fill="Black" Grid.Row="1" Grid.ColumnSpan="2"/>
+    <TextBox Grid.Row="0"
+             Grid.Column="1"
+             MaxWidth="400"
+             Margin="5"
+             TextWrapping="Wrap"
+             Background="#E5484848"
+             ScrollViewer.CanContentScroll="True"
+             ScrollViewer.VerticalScrollBarVisibility="Visible"
+             IsReadOnly="True"
+             Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}">
+      <TextBox.Resources>
+        <Style TargetType="Border">
+          <Setter Property="CornerRadius" Value="5"/>
+        </Style>
+      </TextBox.Resources>
+    </TextBox>
     <StackPanel Grid.Row="1" 
                Grid.ColumnSpan="2"
                Orientation="Horizontal" 

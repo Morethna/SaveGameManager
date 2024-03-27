@@ -80,7 +80,6 @@ public class WindowService : IWindowService
     internal static Window? GetViewInstance<T>() where T : Window, new() => Application.Current.Windows.OfType<T>().FirstOrDefault();
     internal static Window? GetView<T>(T viewModel) => viewModel switch
     {
-
         TextDialogViewModel => GetViewInstance<TextDialog>() ?? new TextDialog(),
         NotifyBoxYesNoViewModel => GetViewInstance<NotifyBoxYesNo>() ?? new NotifyBoxYesNo(),
         NotifyBoxViewModel => GetViewInstance<NotifyBox>() ?? new NotifyBox(),
@@ -88,6 +87,7 @@ public class WindowService : IWindowService
         ProfileDialogViewModel => GetViewInstance<ProfileDialog>() ?? new ProfileDialog(),
         GitHubViewModel => GetViewInstance<GitHub>() ?? new GitHub(),
         MainViewModel => GetViewInstance<MainWindow>() ?? new MainWindow(),
+        SettingsDialogViewModel => GetViewInstance<Settings>() ?? new Settings(),
         _ => throw new NotImplementedException()
     };
 }

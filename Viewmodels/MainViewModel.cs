@@ -1,14 +1,9 @@
 ﻿using SaveGameManager.Core;
 using SaveGameManager.Interfaces;
-using System.Windows;
 using SaveGameManager.Models;
 using System.Windows.Input;
 using System;
-using System.Diagnostics;
-using System.Windows.Navigation;
-using SaveGameManager.Services;
 using SaveGameManager.Views;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SaveGameManager.Viewmodels
 {
@@ -22,10 +17,11 @@ namespace SaveGameManager.Viewmodels
         private readonly ProfileDialogViewModel _profileDialog;
         private readonly AboutViewModel _aboutDialog;
         private readonly NotifyBoxYesNoViewModel _notifyBoxYesNo;
+        private readonly SettingsDialogViewModel _settingsDialog;
         private Profile _selectedProfile;
 
         public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService, IWindowService windowService,
-            TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, NotifyBoxYesNoViewModel notifyBox) 
+            TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, NotifyBoxYesNoViewModel notifyBox, SettingsDialogViewModel settingsDialog) 
         {
             _dataService = dataService;
             _settingsService = settingsService;
@@ -35,7 +31,7 @@ namespace SaveGameManager.Viewmodels
             _profileDialog = profileDialog;
             _aboutDialog = aboutDialog;
             _notifyBoxYesNo = notifyBox;
-
+            _settingsDialog = settingsDialog;
             _selectedProfile = _dataService.SelectedProfile;
 
             CreateSaveGameCommand = new DelegateCommand(ImportSaveGame);
@@ -47,6 +43,7 @@ namespace SaveGameManager.Viewmodels
             RenameSavegameCommand = new DelegateCommand(RenameSavegame);
             OpenProfileDialogCommand = new DelegateCommand(OpenProfileDialog);
             OpenAboutDialogCommand = new DelegateCommand(OpenAboutDialog);
+            OpenSettingsDialogCommand = new DelegateCommand(OpenSettingsDialog);
             KeyDownCommand = new DelegateCommand(KeyDown);
             LoadProfileCommand = new DelegateCommand(LoadProfile);
         }
@@ -68,6 +65,8 @@ namespace SaveGameManager.Viewmodels
         public ICommand OpenAboutDialogCommand { get; set; }
         public ICommand KeyDownCommand { get; set; }
         public ICommand LoadProfileCommand { get; set; }
+
+        public ICommand OpenSettingsDialogCommand { get; set; }
 
         public Profile SelectedProfile
         {
@@ -176,6 +175,8 @@ namespace SaveGameManager.Viewmodels
         {
             _windowService.OpenWindowDialog(_aboutDialog, this);
         }
+        private void OpenSettingsDialog(object obj) => _windowService.OpenWindowDialog(_settingsDialog, this);
+
         private void KeyDown(object obj)
         {
             var key = (KeyEventArgs)obj;

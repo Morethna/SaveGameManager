@@ -35,6 +35,7 @@ namespace SaveGameManager
             services.AddSingleton<GitHubViewModel>();
             services.AddSingleton<NotifyBoxYesNoViewModel>();
             services.AddSingleton<NotifyBoxViewModel>();
+            services.AddSingleton<SettingsDialogViewModel>();
 
             services.AddSingleton(sp => new MainWindow()
             {

@@ -20,6 +20,7 @@
       <RowDefinition />
       <RowDefinition Height="30"/>
     </Grid.RowDefinitions>
+    <Rectangle Grid.ColumnSpan="2" Fill="#FF292929"/>
     <TextBox Grid.Row="0"
              MaxWidth="400"
              Margin="5"

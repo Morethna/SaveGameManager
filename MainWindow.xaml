@@ -100,6 +100,13 @@
               <Image Source="/Resources/P_icon.png" />
             </MenuItem.Icon>
           </MenuItem>
+          <MenuItem x:Name="mtSettings"
+                    Header="Settings"
+                    Command="{Binding OpenSettingsDialogCommand, UpdateSourceTrigger=PropertyChanged}">
+            <MenuItem.Icon>
+              <Image Source="/Resources/P_icon.png" />
+            </MenuItem.Icon>
+          </MenuItem>
         </ContextMenu>
       </Button.ContextMenu>
       <b:Interaction.Triggers>

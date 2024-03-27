@@ -27,6 +27,7 @@ public class NotifyBoxYesNoViewModel : ViewModelBase
             if (_title == value)
                 return;
 
+            Result = false;
             _title = value;
             OnPropertyChanged(nameof(Title));
         }
@@ -39,6 +40,7 @@ public class NotifyBoxYesNoViewModel : ViewModelBase
             if (_message == value)
                 return;
 
+            Result = false;
             _message = value;
             OnPropertyChanged(nameof(Message));
         } 
