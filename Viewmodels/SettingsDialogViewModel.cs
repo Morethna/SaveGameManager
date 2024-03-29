@@ -1,56 +1,212 @@
 ﻿using SaveGameManager.Core;
-using System.Text;
+using SaveGameManager.Models;
+using System;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SaveGameManager.Viewmodels;
 
 public class SettingsDialogViewModel : ViewModelBase
 {
-    private Hotkey? _hotkey;
+    const string None = "None";
+    const string SetYourHotkey = "Set your Hotkey...";
+    const string TBImport = "tbImport";
+    const string TBNext = "tbNext";
+    const string TBPrev = "tbPrev";
+    const string TBLoad = "tbLoad";
+
+    private string _strLoadHotkey = None;
+    private string _strImportHotkey = None;
+    private string _strNextHotkey = None;
+    private string _strRevHotkey = None;
+
+    private Hotkey _load = new();
+    private Hotkey _import = new();
+    private Hotkey _next = new();
+    private Hotkey _prev = new();
+
+
     public SettingsDialogViewModel()
     {
-        HotkeyTextBoxCommand = new DelegateCommand(HotkeyTextBoxPreviewKeyDown);
+        SetHotkeyCommand = new DelegateCommand(SetHotkey);
+        LostFocusCommand = new DelegateCommand(LostFocus);
+        GotFocusCommand = new DelegateCommand(GotFocus);
     }
 
-    private Hotkey? Hotkey 
+    public string LoadHotkey
     {
-        get => _hotkey;
+        get => _strLoadHotkey;
         set
         {
-            if (_hotkey == value)
+            if (_strLoadHotkey == value)
                 return;
 
-            _hotkey = value;
-            OnPropertyChanged(nameof(Hotkey));
+            _strLoadHotkey = value;
+            OnPropertyChanged(nameof(LoadHotkey));
+        }
+    }
+    public string ImportHotkey
+    {
+        get => _strImportHotkey;
+        set
+        {
+            if (_strImportHotkey == value)
+                return;
+
+            _strImportHotkey = value;
+            OnPropertyChanged(nameof(ImportHotkey));
+        }
+    }
+    public string NextHotkey
+    {
+        get => _strNextHotkey;
+        set
+        {
+            if (_strNextHotkey == value)
+                return;
+
+            _strNextHotkey = value;
+            OnPropertyChanged(nameof(NextHotkey));
+        }
+    }
+    public string PrevHotkey
+    {
+        get => _strRevHotkey;
+        set
+        {
+            if (_strRevHotkey == value)
+                return;
+
+            _strRevHotkey = value;
+            OnPropertyChanged(nameof(PrevHotkey));
         }
     }
 
-    public ICommand HotkeyTextBoxCommand { get; set; }
+    private Hotkey Load
+    {
+        get => _load;
+        set
+        {
+            if (_load == value) return;
+            _load = value;
 
-    private void HotkeyTextBoxPreviewKeyDown(object obj)
+            var str = _load.ToString();
+            LoadHotkey = string.IsNullOrEmpty(str) ? None : str;
+        }
+    }
+    private Hotkey Import
+    {
+        get => _import;
+        set
+        {
+            if (_import == value) return;
+            _import = value;
+
+            var str = _import.ToString();
+            ImportHotkey = string.IsNullOrEmpty(str) ? None : str;
+        }
+    }
+    private Hotkey Next
+    {
+        get => _next;
+        set
+        {
+            if (_next == value) return;
+            _next = value;
+
+            var str = _next.ToString();
+            NextHotkey = string.IsNullOrEmpty(str) ? None : str;
+        }
+    }
+    private Hotkey Prev
+    {
+        get => _prev;
+        set
+        {
+            if (_prev == value) return;
+            _prev = value;
+
+            var str = _prev.ToString();
+            PrevHotkey = string.IsNullOrEmpty(str) ? None : str;
+        }
+    }
+
+    public ICommand SetHotkeyCommand { get; set; }
+    public ICommand GotFocusCommand { get; set; }
+    public ICommand LostFocusCommand { get; set; }
+
+    private void SetHotkey(object obj)
+    {
+        if (obj is KeyboardEventArgs args)
+        {
+            var tb = GetTextboxName(args);
+            _ = tb switch
+            {
+                TBImport => Import = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Import),
+                TBNext => Next = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Next),
+                TBPrev => Prev = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Prev),
+                TBLoad => Load = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Load),
+                _ => throw new NotImplementedException()
+            };
+        }
+    }
+    private void GotFocus(object obj)
+    {
+        if (obj is RoutedEventArgs args)
+        {
+            var tb = GetTextboxName(args);
+            _ = tb switch
+            {
+                TBImport => ImportHotkey = SetYourHotkey,
+                TBNext => NextHotkey = SetYourHotkey,
+                TBPrev => PrevHotkey = SetYourHotkey,
+                TBLoad => LoadHotkey = SetYourHotkey,
+                _ => throw new NotImplementedException()
+            };
+        }
+    }
+
+    private void LostFocus(object obj)
+    {
+        if (obj is RoutedEventArgs args)
+        {
+            var tb = GetTextboxName(args);
+            _ = tb switch
+            {
+                TBImport => Import.Key is Key.None ? ImportHotkey = None : ImportHotkey = Import.ToString(),
+                TBNext => Next.Key is Key.None ? NextHotkey = None : NextHotkey = Next.ToString(),
+                TBPrev => Prev.Key is Key.None ? PrevHotkey = None : PrevHotkey = Prev.ToString(),
+                TBLoad => Load.Key is Key.None ? LoadHotkey = None : LoadHotkey = Load.ToString(),
+                _ => throw new NotImplementedException()
+            }; ;
+        }
+    }
+    private static string GetTextboxName(RoutedEventArgs eventArgs)
+    {
+        if (eventArgs.OriginalSource is TextBox tb)
+            return tb.Name;
+        return "";
+    }
+
+
+    private static Hotkey HotkeyTextBoxPreviewKeyDown(KeyEventArgs e, Hotkey hotkey)
     {
         // Don't let the event pass further because we don't want
         // standard textbox shortcuts to work.
-        var e = (KeyEventArgs)obj;
         e.Handled = true;
-
+        
         // Get modifiers and key data
         var modifiers = Keyboard.Modifiers;
         var key = e.Key;
 
         // When Alt is pressed, SystemKey is used instead
         if (key == Key.System)
-        {
             key = e.SystemKey;
-        }
 
         // Pressing delete, backspace or escape without modifiers clears the current value
-        if (modifiers == ModifierKeys.None &&
-            (key == Key.Delete || key == Key.Back || key == Key.Escape))
-        {
-            Hotkey = null;
-            return;
-        }
+        if (modifiers == ModifierKeys.None && (key is Key.Delete or Key.Back or Key.Escape))
+            return new();
 
         // If no actual key was pressed - return
         if (key == Key.LeftCtrl ||
@@ -65,38 +221,10 @@ public class SettingsDialogViewModel : ViewModelBase
             key == Key.OemClear ||
             key == Key.Apps)
         {
-            return;
+            return hotkey;
         }
 
         // Update the value
-        Hotkey = new Hotkey(key, modifiers);
-    }
-}
-
-public class Hotkey(Key key, ModifierKeys modifiers)
-{
-    public Key Key { get; } = key;
-
-    public ModifierKeys Modifiers { get; } = modifiers;
-
-    public string Text
-    {
-        get 
-        {
-            var str = new StringBuilder();
-
-            if (Modifiers.HasFlag(ModifierKeys.Control))
-                str.Append("Ctrl + ");
-            if (Modifiers.HasFlag(ModifierKeys.Shift))
-                str.Append("Shift + ");
-            if (Modifiers.HasFlag(ModifierKeys.Alt))
-                str.Append("Alt + ");
-            if (Modifiers.HasFlag(ModifierKeys.Windows))
-                str.Append("Win + ");
-
-            str.Append(Key);
-
-            return str.ToString();
-        }
+        return new Hotkey(key, modifiers);
     }
 }

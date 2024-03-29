@@ -14,7 +14,7 @@
         ui:WindowHelper.UseModernWindowStyle="True">
   <Grid>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition/>
+      <ColumnDefinition Width="200"/>
       <ColumnDefinition/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
@@ -30,18 +30,97 @@
     <CheckBox Name="chbGlobalHotKey" Content="Using GlobalHotkeys" Grid.ColumnSpan="2"
                 Grid.Column="0" FontSize="15" Foreground="White"/>
     <StackPanel Grid.Row="1" Grid.Column="0">
-      <Label Content="Loading Selected Savegame:" Height="30" FontSize="15" Foreground="White"/>
-      <Label Content="Next Savegame:" Height="30" FontSize="15" Foreground="White"/>
-      <Label Content="Previous Savegame:" Height="30" FontSize="15" Foreground="White"/>
+      <Label Margin="0,1,0,0" Content="Loading Selected Savegame:" Height="30" FontSize="15" Foreground="White"/>
+      <Label Margin="0,2,0,0" Content="Next Savegame:" Height="30" FontSize="15" Foreground="White"/>
+      <Label Margin="0,2,0,0" Content="Previous Savegame:" Height="30" FontSize="15" Foreground="White"/>
+      <Label Margin="0,2,0,0" Content="Import Savegame:" Height="30" FontSize="15" Foreground="White"/>
     </StackPanel>
-    <StackPanel Grid.Row="1" Grid.Column="1">
-      <TextBox x:Name="HotkeyTextBox"
+    <StackPanel Grid.Row="1" Grid.Column="1" Width="200">
+      <TextBox Name="tbLoad"
                IsReadOnly="True"
-               Background="#E5484848"
-             Text="{Binding Hotkey.Text, ElementName=UserControl, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
+               IsReadOnlyCaretVisible="False"
+               IsUndoEnabled="False"
+               Text="{Binding LoadHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="PreviewKeyDown">
-            <b:InvokeCommandAction Command="{Binding HotkeyTextBoxCommand}"
+            <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="GotFocus">
+            <b:InvokeCommandAction Command="{Binding GotFocusCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="LostFocus">
+            <b:InvokeCommandAction Command="{Binding LostFocusCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+        </b:Interaction.Triggers>
+        <TextBox.ContextMenu>
+          <ContextMenu Visibility="Collapsed" />
+        </TextBox.ContextMenu>
+      </TextBox>
+      <TextBox Name="tbNext"
+               IsReadOnly="True"
+               IsReadOnlyCaretVisible="False"
+               IsUndoEnabled="False"
+               Text="{Binding NextHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
+        <b:Interaction.Triggers>
+          <b:EventTrigger EventName="PreviewKeyDown">
+            <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="GotFocus">
+            <b:InvokeCommandAction Command="{Binding GotFocusCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="LostFocus">
+            <b:InvokeCommandAction Command="{Binding LostFocusCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+        </b:Interaction.Triggers>
+        <TextBox.ContextMenu>
+          <ContextMenu Visibility="Collapsed" />
+        </TextBox.ContextMenu>
+      </TextBox>
+      <TextBox Name="tbPrev"
+               IsReadOnly="True"
+               IsReadOnlyCaretVisible="False"
+               IsUndoEnabled="False"
+               Text="{Binding PrevHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
+        <b:Interaction.Triggers>
+          <b:EventTrigger EventName="PreviewKeyDown">
+            <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="GotFocus">
+            <b:InvokeCommandAction Command="{Binding GotFocusCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="LostFocus">
+            <b:InvokeCommandAction Command="{Binding LostFocusCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+        </b:Interaction.Triggers>
+        <TextBox.ContextMenu>
+          <ContextMenu Visibility="Collapsed" />
+        </TextBox.ContextMenu>
+      </TextBox>
+      <TextBox Name="tbImport"
+               IsReadOnly="True"
+               IsReadOnlyCaretVisible="False"
+               IsUndoEnabled="False"
+               Text="{Binding ImportHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
+        <b:Interaction.Triggers>
+          <b:EventTrigger EventName="PreviewKeyDown">
+            <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="GotFocus">
+            <b:InvokeCommandAction Command="{Binding GotFocusCommand}"
+                                   PassEventArgsToCommand="True"/>
+          </b:EventTrigger>
+          <b:EventTrigger EventName="LostFocus">
+            <b:InvokeCommandAction Command="{Binding LostFocusCommand}"
                                    PassEventArgsToCommand="True"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
