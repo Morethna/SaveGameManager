@@ -26,6 +26,7 @@
 	<None Remove="Resources\datei-offnen.png" />
 	<None Remove="Resources\discord.png" />
 	<None Remove="Resources\Icon-Zahnrad.png" />
+	<None Remove="Resources\Lies-of-P-Red-Fox.png" />
 	<None Remove="Resources\loschen.png" />
 	<None Remove="Resources\P.ico" />
 	<None Remove="Resources\P.png" />
@@ -61,6 +62,7 @@
 	<Resource Include="Resources\datei-offnen.png" />
 	<Resource Include="Resources\discord.png" />
 	<Resource Include="Resources\lies-of-p-4k-9c.jpg" />
+	<Resource Include="Resources\Lies-of-P-Red-Fox.png" />
 	<Resource Include="Resources\loschen.png" />
 	<Resource Include="Resources\P.ico" />
 	<Resource Include="Resources\P.png" />

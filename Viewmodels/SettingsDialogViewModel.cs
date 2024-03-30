@@ -1,4 +1,6 @@
-﻿using SaveGameManager.Core;
+﻿using NHotkey;
+using SaveGameManager.Core;
+using SaveGameManager.Interfaces;
 using SaveGameManager.Models;
 using System;
 using System.Windows;
@@ -11,11 +13,13 @@ public class SettingsDialogViewModel : ViewModelBase
 {
     const string None = "None";
     const string SetYourHotkey = "Set your Hotkey...";
+
     const string TBImport = "tbImport";
     const string TBNext = "tbNext";
     const string TBPrev = "tbPrev";
     const string TBLoad = "tbLoad";
 
+    private readonly IWindowService _windowService;
     private string _strLoadHotkey = None;
     private string _strImportHotkey = None;
     private string _strNextHotkey = None;
@@ -26,12 +30,12 @@ public class SettingsDialogViewModel : ViewModelBase
     private Hotkey _next = new();
     private Hotkey _prev = new();
 
-
-    public SettingsDialogViewModel()
+    public SettingsDialogViewModel(IWindowService windowService)
     {
         SetHotkeyCommand = new DelegateCommand(SetHotkey);
         LostFocusCommand = new DelegateCommand(LostFocus);
         GotFocusCommand = new DelegateCommand(GotFocus);
+        _windowService = windowService;
     }
 
     public string LoadHotkey
@@ -143,10 +147,10 @@ public class SettingsDialogViewModel : ViewModelBase
             var tb = GetTextboxName(args);
             _ = tb switch
             {
-                TBImport => Import = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Import),
-                TBNext => Next = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Next),
-                TBPrev => Prev = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Prev),
-                TBLoad => Load = HotkeyTextBoxPreviewKeyDown((KeyEventArgs)obj, Load),
+                TBImport => Import = HotkeyKeyDown((KeyEventArgs)obj, Import),
+                TBNext => Next = HotkeyKeyDown((KeyEventArgs)obj, Next),
+                TBPrev => Prev = HotkeyKeyDown((KeyEventArgs)obj, Prev),
+                TBLoad => Load = HotkeyKeyDown((KeyEventArgs)obj, Load),
                 _ => throw new NotImplementedException()
             };
         }
@@ -190,7 +194,7 @@ public class SettingsDialogViewModel : ViewModelBase
     }
 
 
-    private static Hotkey HotkeyTextBoxPreviewKeyDown(KeyEventArgs e, Hotkey hotkey)
+    private Hotkey HotkeyKeyDown(KeyEventArgs e, Hotkey hotkey)
     {
         // Don't let the event pass further because we don't want
         // standard textbox shortcuts to work.
@@ -223,8 +227,28 @@ public class SettingsDialogViewModel : ViewModelBase
         {
             return hotkey;
         }
+        if (hotkey.Key == key && hotkey.Modifiers == modifiers)
+            return hotkey;
+
+        var newHK = new Hotkey(key, modifiers);
+
+        if (!CheckHotkey(newHK))
+        {
+            _windowService.NotifierWarning($"Hotkey \"{newHK}\" is already in use.");
+            return hotkey;
+        }
 
         // Update the value
-        return new Hotkey(key, modifiers);
+        return newHK;
+    }
+
+    private bool CheckHotkey(Hotkey hotkey)
+    {
+        if ((hotkey.Key == Import.Key && hotkey.Modifiers == Import.Modifiers) ||
+            (hotkey.Key == Next.Key && hotkey.Modifiers == Next.Modifiers) ||
+            (hotkey.Key == Prev.Key && hotkey.Modifiers == Prev.Modifiers) ||
+            (hotkey.Key == Load.Key && hotkey.Modifiers == Load.Modifiers))
+            return false;
+        return true;
     }
 }
