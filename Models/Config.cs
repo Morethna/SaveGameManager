@@ -1,5 +1,4 @@
 ﻿using SaveGameManager.Core;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace SaveGameManager.Models;
@@ -32,5 +31,7 @@ public class Config : OberservableObject
             OnPropertyChanged(nameof(ActiveProfile));
         }
     }
-    public ObservableCollection<Profile> Profiles { get; set; } = new ObservableCollection<Profile>();
+    public ObservableCollection<Profile> Profiles { get; set; } = [];
+
+    public Settings Settings { get; set; } = new();
 }

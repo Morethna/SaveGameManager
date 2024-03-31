@@ -20,6 +20,8 @@ public class SettingsDialogViewModel : ViewModelBase
     const string TBLoad = "tbLoad";
 
     private readonly IWindowService _windowService;
+    private readonly Settings _settings;
+
     private string _strLoadHotkey = None;
     private string _strImportHotkey = None;
     private string _strNextHotkey = None;
@@ -30,12 +32,18 @@ public class SettingsDialogViewModel : ViewModelBase
     private Hotkey _next = new();
     private Hotkey _prev = new();
 
-    public SettingsDialogViewModel(IWindowService windowService)
+    public SettingsDialogViewModel(IWindowService windowService, IDataService dataService)
     {
         SetHotkeyCommand = new DelegateCommand(SetHotkey);
         LostFocusCommand = new DelegateCommand(LostFocus);
         GotFocusCommand = new DelegateCommand(GotFocus);
         _windowService = windowService;
+        _settings = dataService.Config.Settings;
+
+        Import = _settings.Hotkeys.TryGetValue("Import", out Hotkey? import) ? import : new();
+        Next = _settings.Hotkeys.TryGetValue("Next", out Hotkey? next) ? next : new();
+        Prev = _settings.Hotkeys.TryGetValue("Prev", out Hotkey? prev) ? prev : new();
+        Load = _settings.Hotkeys.TryGetValue("Load", out Hotkey? load) ? load : new();
     }
 
     public string LoadHotkey
@@ -87,6 +95,40 @@ public class SettingsDialogViewModel : ViewModelBase
         }
     }
 
+    public bool OnTop
+    {
+        get => _settings.StaysOnTop;
+        set
+        {
+            if (_settings.StaysOnTop == value) return;
+
+            _settings.StaysOnTop = value;
+            OnPropertyChanged(nameof(OnTop));
+        }
+    }
+    public bool GlobalHotkeys
+    {
+        get => _settings.GlobalHotkeys;
+        set
+        {
+            if (_settings.GlobalHotkeys == value) return;
+
+            _settings.GlobalHotkeys = value;
+            OnPropertyChanged(nameof(GlobalHotkeys));
+        }
+    }
+    public bool CheckUpdates
+    {
+        get => _settings.CheckUpdates;
+        set
+        {
+            if (_settings.CheckUpdates == value) return;
+
+            _settings.CheckUpdates = value;
+            OnPropertyChanged(nameof(CheckUpdates));
+        }
+    }
+
     private Hotkey Load
     {
         get => _load;
@@ -95,6 +137,7 @@ public class SettingsDialogViewModel : ViewModelBase
             if (_load == value) return;
             _load = value;
 
+            CheckHotkeySettings("Load", Load);
             var str = _load.ToString();
             LoadHotkey = string.IsNullOrEmpty(str) ? None : str;
         }
@@ -107,6 +150,7 @@ public class SettingsDialogViewModel : ViewModelBase
             if (_import == value) return;
             _import = value;
 
+            CheckHotkeySettings("Import", Import);
             var str = _import.ToString();
             ImportHotkey = string.IsNullOrEmpty(str) ? None : str;
         }
@@ -120,6 +164,7 @@ public class SettingsDialogViewModel : ViewModelBase
             _next = value;
 
             var str = _next.ToString();
+            CheckHotkeySettings("Next", Next);
             NextHotkey = string.IsNullOrEmpty(str) ? None : str;
         }
     }
@@ -132,6 +177,7 @@ public class SettingsDialogViewModel : ViewModelBase
             _prev = value;
 
             var str = _prev.ToString();
+            CheckHotkeySettings("Prev", Prev);
             PrevHotkey = string.IsNullOrEmpty(str) ? None : str;
         }
     }
@@ -170,7 +216,6 @@ public class SettingsDialogViewModel : ViewModelBase
             };
         }
     }
-
     private void LostFocus(object obj)
     {
         if (obj is RoutedEventArgs args)
@@ -186,14 +231,13 @@ public class SettingsDialogViewModel : ViewModelBase
             }; ;
         }
     }
+
     private static string GetTextboxName(RoutedEventArgs eventArgs)
     {
         if (eventArgs.OriginalSource is TextBox tb)
             return tb.Name;
         return "";
     }
-
-
     private Hotkey HotkeyKeyDown(KeyEventArgs e, Hotkey hotkey)
     {
         // Don't let the event pass further because we don't want
@@ -241,7 +285,6 @@ public class SettingsDialogViewModel : ViewModelBase
         // Update the value
         return newHK;
     }
-
     private bool CheckHotkey(Hotkey hotkey)
     {
         if ((hotkey.Key == Import.Key && hotkey.Modifiers == Import.Modifiers) ||
@@ -250,5 +293,10 @@ public class SettingsDialogViewModel : ViewModelBase
             (hotkey.Key == Load.Key && hotkey.Modifiers == Load.Modifiers))
             return false;
         return true;
+    }
+    private void CheckHotkeySettings(string Key, Hotkey value)
+    {
+        if(!_settings.Hotkeys.TryAdd(Key, value))
+            _settings.Hotkeys[Key] = value;
     }
 }

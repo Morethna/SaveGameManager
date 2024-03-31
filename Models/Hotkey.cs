@@ -1,13 +1,18 @@
-﻿using System.Text;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.Text;
 using System.Windows.Input;
 
 namespace SaveGameManager.Models;
 
 public class Hotkey
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public Key Key { get; }
+    [JsonConverter(typeof(StringEnumConverter))]
     public ModifierKeys Modifiers { get; }
 
+    [JsonConstructor]
     public Hotkey(Key key, ModifierKeys modifiers)
     {
         Key = key;

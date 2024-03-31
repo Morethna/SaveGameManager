@@ -5,14 +5,16 @@ using System;
 using System.IO;
 using System.Linq;
 using SaveGameManager.Viewmodels;
+using SaveGameManager.Core;
+using System.Text.Json;
 
 namespace SaveGameManager.Services;
 public class DataService : IDataService
 {
     private Config _config = new();
     private Profile? _selectedProfile;
-    private readonly string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager/profile.json";
-    private readonly string _path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/SaveGameManager";
+    private readonly string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\SaveGameManager\profile.json";
+    private readonly string _path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\SaveGameManager";
     private readonly IWindowService _windowService;
     private readonly NotifyBoxViewModel _notifyBox;
 
@@ -66,8 +68,7 @@ public class DataService : IDataService
                 return;
             }
 
-            var text = File.ReadAllText(_filePath);
-            _config = JsonConvert.DeserializeObject<Config>(text) ?? new Config();
+            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(_filePath)) ?? new Config();
 
             if (_config.Profiles.Count > 0)
                 _selectedProfile = _config.Profiles.Where(p => p.Id == _config.ActiveProfile).First();

@@ -11,6 +11,11 @@
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen"
         ui:WindowHelper.UseModernWindowStyle="True">
+  <b:Interaction.Triggers>
+    <b:EventTrigger EventName="Closed">
+      <b:InvokeCommandAction Command="{Binding SaveCommand}"/>
+    </b:EventTrigger>
+  </b:Interaction.Triggers>
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="140"/>
@@ -41,9 +46,9 @@
         <Label Margin="0,12,0,0" Content="Global Hotkeys:" Height="20" FontSize="13" Foreground="White"/>
       </StackPanel>
       <StackPanel Grid.Column="1" Grid.Row="1" Margin="5">
-        <CheckBox Name="chbUpdates" FontSize="15" Foreground="White"/>
-        <CheckBox Name="chbTop" FontSize="15" Foreground="White"/>
-        <CheckBox Name="chbGlobalHotKey" FontSize="15" Foreground="White"/>
+        <CheckBox Name="chbUpdates" FontSize="15" Foreground="White" IsChecked="{Binding CheckUpdates}"/>
+        <CheckBox Name="chbTop" FontSize="15" Foreground="White" IsChecked="{Binding OnTop}"/>
+        <CheckBox Name="chbGlobalHotKey" FontSize="15" Foreground="White" IsChecked="{Binding GlobalHotkeys}"/>
       </StackPanel>
     </Grid>
     <Grid Margin="10,0,10,0" Grid.Row="1">
