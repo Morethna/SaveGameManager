@@ -3,7 +3,6 @@ using SaveGameManager.Interfaces;
 using SaveGameManager.Models;
 using System.Windows.Input;
 using System;
-using SaveGameManager.Views;
 
 namespace SaveGameManager.Viewmodels
 {

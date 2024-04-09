@@ -10,6 +10,11 @@
         WindowStartupLocation="CenterScreen" 
         ResizeMode="NoResize" SizeToContent="Width" Height="150" MaxWidth="500"
         ui:WindowHelper.UseModernWindowStyle="True">
+  <b:Interaction.Triggers>
+    <b:EventTrigger EventName="Loaded">
+      <b:InvokeCommandAction Command="{Binding LoadCommand}"/>
+    </b:EventTrigger>
+  </b:Interaction.Triggers>
   <Window.Resources>
     <Style TargetType="Border">
       <Setter Property="CornerRadius" Value="5"/>

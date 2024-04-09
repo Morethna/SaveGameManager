@@ -15,8 +15,10 @@ public class NotifyBoxYesNoViewModel : ViewModelBase
     {
         _windowService = windowService;
         SetResultCommand = new DelegateCommand(SetResult);
+        LoadCommand = new DelegateCommand(ResetResult);
     }
     public ICommand SetResultCommand { get; set; }
+    public ICommand LoadCommand { get; set; }
 
     public bool Result { get; private set; } = false;
     public string Title
@@ -26,8 +28,6 @@ public class NotifyBoxYesNoViewModel : ViewModelBase
         {
             if (_title == value)
                 return;
-
-            Result = false;
             _title = value;
             OnPropertyChanged(nameof(Title));
         }
@@ -39,12 +39,11 @@ public class NotifyBoxYesNoViewModel : ViewModelBase
         {
             if (_message == value)
                 return;
-
-            Result = false;
             _message = value;
             OnPropertyChanged(nameof(Message));
         } 
     }
+    private void ResetResult(object obj) => Result = false;
 
     private void SetResult(object obj)
     {
