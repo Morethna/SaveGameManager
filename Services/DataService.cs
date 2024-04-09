@@ -5,8 +5,6 @@ using System;
 using System.IO;
 using System.Linq;
 using SaveGameManager.Viewmodels;
-using SaveGameManager.Core;
-using System.Text.Json;
 
 namespace SaveGameManager.Services;
 public class DataService : IDataService
@@ -44,9 +42,9 @@ public class DataService : IDataService
                 Config.ActiveProfile = _selectedProfile.Id;
         }
     }
-    public Savegame? SelectedSaveGame { get; set; }
     public Config Config { get => _config; }
     private ISettingsService Settings { get; }
+    public Savegame? SelectedSaveGame { get; set; }
 
     #region internal methods
     internal void InitConfig()
@@ -71,9 +69,9 @@ public class DataService : IDataService
             _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(_filePath)) ?? new Config();
 
             if (_config.Profiles.Count > 0)
-                _selectedProfile = _config.Profiles.Where(p => p.Id == _config.ActiveProfile).First();
+                SelectedProfile = _config.Profiles.Where(p => p.Id == _config.ActiveProfile).First();
 
-            Settings.MainUiEnabled = _selectedProfile != null;
+            Settings.MainUiEnabled = SelectedProfile != null;
             Settings.ProfileUiEnabled = !string.IsNullOrWhiteSpace(_config.Gamepath);
         }
         catch (Exception ex)

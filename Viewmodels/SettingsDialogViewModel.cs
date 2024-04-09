@@ -1,4 +1,5 @@
 ﻿using NHotkey;
+using NHotkey.Wpf;
 using SaveGameManager.Core;
 using SaveGameManager.Interfaces;
 using SaveGameManager.Models;
@@ -20,6 +21,8 @@ public class SettingsDialogViewModel : ViewModelBase
     const string TBLoad = "tbLoad";
 
     private readonly IWindowService _windowService;
+    private readonly IDirectoryService _directoryService;
+    private readonly IDataService _dataService;
     private readonly Settings _settings;
 
     private string _strLoadHotkey = None;
@@ -32,18 +35,24 @@ public class SettingsDialogViewModel : ViewModelBase
     private Hotkey _next = new();
     private Hotkey _prev = new();
 
-    public SettingsDialogViewModel(IWindowService windowService, IDataService dataService)
+    public SettingsDialogViewModel(IWindowService windowService, IDataService dataService, IDirectoryService directoryService)
     {
         SetHotkeyCommand = new DelegateCommand(SetHotkey);
         LostFocusCommand = new DelegateCommand(LostFocus);
         GotFocusCommand = new DelegateCommand(GotFocus);
+        SetGlobalHotkeysCommad = new DelegateCommand(SetGlobalHotkeys);
+
         _windowService = windowService;
-        _settings = dataService.Config.Settings;
+        _directoryService = directoryService;
+        _dataService = dataService;
+        _settings = _dataService.Config.Settings;
 
         Import = _settings.Hotkeys.TryGetValue("Import", out Hotkey? import) ? import : new();
         Next = _settings.Hotkeys.TryGetValue("Next", out Hotkey? next) ? next : new();
         Prev = _settings.Hotkeys.TryGetValue("Prev", out Hotkey? prev) ? prev : new();
         Load = _settings.Hotkeys.TryGetValue("Load", out Hotkey? load) ? load : new();
+
+        SetGlobalHotkeys(null);
     }
 
     public string LoadHotkey
@@ -185,6 +194,7 @@ public class SettingsDialogViewModel : ViewModelBase
     public ICommand SetHotkeyCommand { get; set; }
     public ICommand GotFocusCommand { get; set; }
     public ICommand LostFocusCommand { get; set; }
+    public ICommand SetGlobalHotkeysCommad { get; set; }
 
     private void SetHotkey(object obj)
     {
@@ -232,6 +242,18 @@ public class SettingsDialogViewModel : ViewModelBase
         }
     }
 
+    internal void ImportSaveGame(object obj, HotkeyEventArgs e)
+    {
+        if (e.Name == TBImport)
+            _directoryService.CreateSaveGame(_dataService.SelectedProfile);
+        e.Handled = true;
+    }
+    internal void LoadSaveGame(object obj, HotkeyEventArgs e)
+    {
+        if (e.Name == TBLoad)
+            _directoryService.LoadSaveGame(_dataService.SelectedSaveGame);
+        e.Handled = true;
+    }
     private static string GetTextboxName(RoutedEventArgs eventArgs)
     {
         if (eventArgs.OriginalSource is TextBox tb)
@@ -298,5 +320,19 @@ public class SettingsDialogViewModel : ViewModelBase
     {
         if(!_settings.Hotkeys.TryAdd(Key, value))
             _settings.Hotkeys[Key] = value;
+    }
+
+    private void SetGlobalHotkeys(object? obj)
+    {
+        if (Import.Key != Key.None)
+            HotkeyManager.Current.AddOrReplace(TBImport, Import.Key, Import.Modifiers, ImportSaveGame);
+        else
+            HotkeyManager.Current.Remove(TBImport);
+
+
+        if (Load.Key != Key.None)
+            HotkeyManager.Current.AddOrReplace(TBLoad, Load.Key, Load.Modifiers, LoadSaveGame);
+        else
+            HotkeyManager.Current.Remove(TBLoad);
     }
 }

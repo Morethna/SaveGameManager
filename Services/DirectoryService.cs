@@ -3,11 +3,9 @@ using SaveGameManager.Interfaces;
 using System;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using System.Diagnostics;
 using SaveGameManager.Viewmodels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using SaveGameManager.Services;
 
 namespace SaveGameManager.Handler;
 public class DirectoryService(IDataService dataService, IWindowService windowService, ISettingsService settings, NotifyBoxViewModel notifyBox) : IDirectoryService
@@ -23,7 +21,7 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
 
 
     #region private methode
-    private void CleanUpSavegame(string folder)
+    private static void CleanUpSavegame(string folder)
     {
         if (Directory.Exists(folder))
         {
@@ -101,8 +99,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
         }
     }
 
-    public void DeleteProfilePath(Profile profile)
+    public void DeleteProfilePath(Profile? profile)
     {
+        if (profile == null) return;
+
         try
         {
             var path = Path.Combine(SaveGameFolder, profile.Id);
@@ -116,8 +116,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
         }
     }
-    public void CreateSaveGame(Profile profile)
+    public void CreateSaveGame(Profile? profile)
     {
+        if (profile == null) return;
+
         try
         {
             if (string.IsNullOrEmpty(GameFolder))
@@ -147,8 +149,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
        }     
     }
-    public void CreateProfile(Profile profile)
+    public void CreateProfile(Profile? profile)
     {
+        if (profile is null) return;
+
         try
         {
             if (string.IsNullOrEmpty(GameFolder))
@@ -168,8 +172,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
         }
     }
-    public void DeleteSaveGame(Savegame savegame)
+    public void DeleteSaveGame(Savegame? savegame)
     {
+        if (savegame is null) return;
+
         try
         {
             if (Directory.Exists(savegame.Path))
@@ -188,8 +194,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
         }
     }
-    public void LoadSaveGame(Savegame savegame)
+    public void LoadSaveGame(Savegame? savegame)
     {
+        if (savegame is null) return;
+
         try
         {
             CleanUpSavegame(GameFolder);
@@ -212,8 +220,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
         }
     }
-    public void RenameSaveGameFolder(Savegame savegame, string newName)
+    public void RenameSaveGameFolder(Savegame? savegame, string newName)
     {
+        if (savegame is null) return;
+
         try
         {
             var newPath = savegame.Path.Replace(savegame.Name, newName);
@@ -237,13 +247,12 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
         }
     }
-    public void LoadProfile(Profile profile)
+    public void LoadProfile(Profile? profile)
     {
+        if (profile is null) return;
+
         try
         {
-            if (profile is null)
-                return;
-
             var saveGamePath = Path.Combine(SaveGameFolder, profile.Id);
             if (Directory.Exists(saveGamePath))
             {
@@ -262,8 +271,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
         }
     }
-    public void ReplaceSavegame(Savegame savegame)
+    public void ReplaceSavegame(Savegame? savegame)
     {
+        if (savegame is null) return;
+
         CleanUpSavegame(savegame.Path);
         if (Directory.Exists(savegame.Path))
         {
@@ -274,8 +285,10 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             }
         }
     }
-    public void OpenSaveGame(Savegame savegame)
+    public void OpenSaveGame(Savegame? savegame)
     {
+        if (savegame is null) return;
+
         try
         {
             if (!Directory.Exists(savegame.Path))

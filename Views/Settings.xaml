@@ -13,7 +13,7 @@
         ui:WindowHelper.UseModernWindowStyle="True">
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Closed">
-      <b:InvokeCommandAction Command="{Binding SaveCommand}"/>
+      <b:InvokeCommandAction Command="{Binding SetGlobalHotkeysCommad}"/>
     </b:EventTrigger>
   </b:Interaction.Triggers>
   <Grid>
