@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Text;
 using System.Windows.Input;
 
@@ -8,11 +9,10 @@ namespace SaveGameManager.Models;
 public class Hotkey
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public Key Key { get; }
+    public Key Key { get; set; }
     [JsonConverter(typeof(StringEnumConverter))]
-    public ModifierKeys Modifiers { get; }
+    public ModifierKeys Modifiers { get; set; }
 
-    [JsonConstructor]
     public Hotkey(Key key, ModifierKeys modifiers)
     {
         Key = key;

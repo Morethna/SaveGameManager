@@ -5,16 +5,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
-        xmlns:local="clr-namespace:SaveGameManager"
         mc:Ignorable="d"
         Title="SaveGameManager - Lies of P" 
         Height="650" Width="500" 
         MinHeight="350" MinWidth="300"
         WindowStartupLocation="CenterScreen"
-        ui:WindowHelper.UseModernWindowStyle="True">
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Topmost="{Binding Config.Settings.StaysOnTop, UpdateSourceTrigger=PropertyChanged}">
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Loaded">
-      <b:InvokeCommandAction Command="{Binding LoadProfileCommand}"/>
+      <b:InvokeCommandAction Command="{Binding LoadCommand}"/>
     </b:EventTrigger>
   </b:Interaction.Triggers>
   <Window.Resources>
@@ -66,8 +66,9 @@
               Margin="0,8,0,0"
               FontSize="12"
               Background="#B2484848"
+              Foreground="White"
               SelectedItem= "{Binding SelectedProfile}"
-              ItemsSource="{Binding Config.Profiles}" BorderBrush="{x:Null}"
+              ItemsSource="{Binding Config.Profiles}"
               IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
       <ComboBox.ItemTemplate>
         <DataTemplate>
@@ -116,19 +117,15 @@
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </Button>
-    <TreeView x:Name="tvSavegame"
+    <ui:ListView x:Name="tvSavegame"
               Grid.Row="1"
               Grid.ColumnSpan="2"
-              Background="#B2484848"
               ScrollViewer.CanContentScroll="True"
               Margin="10,0,10,0"
+              Background="#B2484848"
               ItemsSource="{Binding SelectedProfile.SaveGames}"
-              PreviewMouseRightButtonDown="tvSavegame_PreviewMouseRightButtonDown">
+              SelectedItem="{Binding SelectedSaveGame}">
       <b:Interaction.Triggers>
-        <b:EventTrigger EventName="SelectedItemChanged">
-          <b:InvokeCommandAction Command="{Binding SelectedItemChangedCommand}"
-                                 CommandParameter="{Binding ElementName=tvSavegame, Path=SelectedItem}"/>
-        </b:EventTrigger>
         <b:EventTrigger EventName="KeyDown">
           <b:InvokeCommandAction Command="{Binding KeyDownCommand}"
                                  PassEventArgsToCommand="True"/>
@@ -138,7 +135,7 @@
                                  PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
-      <TreeView.ContextMenu>
+      <ui:ListView.ContextMenu>
         <ContextMenu>
           <MenuItem x:Name="mtDelete"
                     Header="Delete"
@@ -162,23 +159,24 @@
             </MenuItem.Icon>
           </MenuItem>
         </ContextMenu>
-      </TreeView.ContextMenu>
-      <TreeView.ItemTemplate>
+      </ui:ListView.ContextMenu>
+      <ui:ListView.ItemTemplate>
         <HierarchicalDataTemplate>
           <StackPanel Orientation="Horizontal">
             <Image Source="/Resources/P_16.png" Margin="0,0,5,0" Stretch="Fill"/>
-            <TextBlock Text="{Binding Name}"/>
+            <TextBlock Text="{Binding Name}" Foreground="White" />
           </StackPanel>
         </HierarchicalDataTemplate>
-      </TreeView.ItemTemplate>
-    </TreeView>
+      </ui:ListView.ItemTemplate>
+    </ui:ListView>
     <StackPanel Orientation="Horizontal" 
                 Grid.Row="3" Grid.ColumnSpan="2"
                 Margin="10,5,0,0">
       <Button x:Name="btnImport"
-              Background="#B2484848"
               Width="60" Height="27"
               FontSize="12"
+              Background="#B2484848"
+              Foreground="White"
               Content="Import"
               Command="{Binding CreateSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
               IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
@@ -189,9 +187,10 @@
         </Button.Resources>
       </Button>
       <Button x:Name="btnReplace"
-              Background="#B2484848"
               Width="60" Height="27"
               Margin="5,0,0,0"
+              Background="#B2484848"
+              Foreground="White"
               FontSize="12"
               Content="Replace"
               Command="{Binding ReplaceSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
@@ -203,9 +202,10 @@
         </Button.Resources>
       </Button>
       <Button x:Name="btnLoad"
-              Background="#B2484848"
               Width="60" Height="27"
               Margin="5,0,0,0"
+              Background="#B2484848"
+              Foreground="White"
               FontSize="12"
               Content="Load"
               Command="{Binding LoadSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"

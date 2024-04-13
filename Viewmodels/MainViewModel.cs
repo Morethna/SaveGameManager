@@ -3,14 +3,18 @@ using SaveGameManager.Interfaces;
 using SaveGameManager.Models;
 using System.Windows.Input;
 using System;
+using NHotkey.Wpf;
+using static System.Net.Mime.MediaTypeNames;
+using NHotkey;
+using System.Linq;
 
 namespace SaveGameManager.Viewmodels;
 public class MainViewModel : ViewModelBase
 {
-    private Savegame? _selectedSaveGame;
     private Profile? _selectedProfile;
+    private Savegame? _selectedSavegame;
     private ISettingsService _settingsService;
-    private readonly IDataService _dataService;
+    private IDataService _dataService;
     private readonly IDirectoryService _directoryService;
     private readonly IWindowService _windowService;
     private readonly TextDialogViewModel _textDialog;
@@ -33,37 +37,20 @@ public class MainViewModel : ViewModelBase
         _settingsDialog = settingsDialog;
 
         _selectedProfile = _dataService.SelectedProfile;
-        _selectedSaveGame = _dataService.SelectedSaveGame;
+        _selectedSavegame = _dataService.SelectedSaveGame;
 
         CreateSaveGameCommand = new DelegateCommand(ImportSaveGame);
         DeleteSaveGameCommand = new DelegateCommand(DeleteSaveGame);
         LoadSaveGameCommand = new DelegateCommand(LoadSaveGame);
         ReplaceSaveGameCommand = new DelegateCommand(ReplaceSaveGame);
-        SelectedItemChangedCommand = new DelegateCommand(SelectedItemChanged);
         OpenSaveGameCommand = new DelegateCommand(OpenSaveGame);
         RenameSavegameCommand = new DelegateCommand(RenameSavegame);
         OpenProfileDialogCommand = new DelegateCommand(OpenProfileDialog);
         OpenAboutDialogCommand = new DelegateCommand(OpenAboutDialog);
         OpenSettingsDialogCommand = new DelegateCommand(OpenSettingsDialog);
         KeyDownCommand = new DelegateCommand(KeyDown);
-        LoadProfileCommand = new DelegateCommand(LoadProfile);
+        LoadCommand = new DelegateCommand(Load);
     }
-
-    private Savegame? SelectedSaveGame
-    {
-        get => _selectedSaveGame;
-        set
-        {
-            if (_selectedSaveGame == value)
-                return;
-            _selectedSaveGame = value;
-            _dataService.SelectedSaveGame = value;
-
-            OnPropertyChanged(nameof(SelectedSaveGame));
-        }
-    }
-    public Config Config { get => _dataService.Config; }
-
     public Profile? SelectedProfile
     {
         get => _selectedProfile;
@@ -79,6 +66,22 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged(nameof(SelectedProfile));
         }
     }
+    public Savegame? SelectedSaveGame
+    {
+        get => _selectedSavegame;
+        set
+        {
+            if (_selectedSavegame == value)
+                return;
+            _selectedSavegame = value;
+            _dataService.SelectedSaveGame = value;
+
+            OnPropertyChanged(nameof(SelectedSaveGame));
+        }
+    }
+
+    public Config Config { get => _dataService.Config; }
+
     public ISettingsService SettingsService
     {
         get => _settingsService;
@@ -96,24 +99,31 @@ public class MainViewModel : ViewModelBase
     public ICommand DeleteSaveGameCommand { get; set; }
     public ICommand LoadSaveGameCommand { get; set; }
     public ICommand ReplaceSaveGameCommand { get; set; }
-    public ICommand SelectedItemChangedCommand { get; set; }
     public ICommand OpenSaveGameCommand { get; set; }
     public ICommand RenameSavegameCommand { get; set; }
     public ICommand OpenProfileDialogCommand { get; set; }
     public ICommand OpenAboutDialogCommand { get; set; }
     public ICommand KeyDownCommand { get; set; }
-    public ICommand LoadProfileCommand { get; set; }
+    public ICommand LoadCommand { get; set; }
     public ICommand OpenSettingsDialogCommand { get; set; }
 
 
-
-    private void SelectedItemChanged(object obj) => SelectedSaveGame = (Savegame)obj;
     private void ImportSaveGame(object obj) =>_directoryService.CreateSaveGame(SelectedProfile);
     private void LoadSaveGame(object obj) => _directoryService.LoadSaveGame(SelectedSaveGame);
-    private void LoadProfile(object obj) => _directoryService.LoadProfile(SelectedProfile);
+    private void Load(object obj)
+    {
+
+        _directoryService.LoadProfile(SelectedProfile);
+        SetGlobalHotkeys();
+    }
     private void ReplaceSaveGame(object obj)
     {
-        if (SelectedSaveGame == null) return;
+        if (SelectedSaveGame == null)
+        {
+            _windowService.NotifierWarning($"Select a savegame");
+            return;
+        }
+            
         var repSG = SelectedSaveGame.Name;
 
         try
@@ -173,12 +183,83 @@ public class MainViewModel : ViewModelBase
         SelectedProfile = _dataService.SelectedProfile;
     }
     private void OpenAboutDialog(object obj) => _windowService.OpenWindowDialog(_aboutDialog, this);
-    private void OpenSettingsDialog(object obj) => _windowService.OpenWindowDialog(_settingsDialog, this);
-
+    private void OpenSettingsDialog(object obj)
+    {
+        _windowService.OpenWindowDialog(_settingsDialog, this);
+        SetGlobalHotkeys();
+    }    
     private void KeyDown(object obj)
     {
         var key = (KeyEventArgs)obj;
         if (key.Key == Key.Delete)
             DeleteSaveGame(null);
+    }
+
+    internal void HotkeyImport(object obj, HotkeyEventArgs e)
+    {
+        if (e.Name is "Import")
+            _directoryService.CreateSaveGame(SelectedProfile);
+        e.Handled = true;
+    }
+    internal void HotkeyLoad(object obj, HotkeyEventArgs e)
+    {
+        if (e.Name is "Load")
+            _directoryService.LoadSaveGame(SelectedSaveGame);
+        e.Handled = true;
+    }
+    internal void HotkeyNext(object obj, HotkeyEventArgs e)
+    {
+        e.Handled = true;
+
+        if (e.Name is not "Next")
+            return;
+
+        if (SelectedProfile is null || SelectedProfile.SaveGames.Count is 0)
+            return;
+
+        if (SelectedSaveGame is null)
+        {
+            SelectedSaveGame = SelectedProfile.SaveGames.First();
+            return;
+        }
+        var index = SelectedProfile.SaveGames.IndexOf(SelectedSaveGame);
+        if (index == SelectedProfile.SaveGames.Count - 1) return;
+
+        SelectedSaveGame = SelectedProfile.SaveGames[index + 1];
+    }
+    internal void HotkeyPrev(object obj, HotkeyEventArgs e)
+    {
+        e.Handled = true;
+
+        if (e.Name is not "Prev")
+            return;
+
+        if (SelectedProfile is null || SelectedProfile.SaveGames.Count is 0) return;
+
+        if (SelectedSaveGame is null)
+        {
+            SelectedSaveGame = SelectedProfile.SaveGames.First();
+            return;
+        }
+        var index = SelectedProfile.SaveGames.IndexOf(SelectedSaveGame);
+        if (index == 0) return;
+
+        SelectedSaveGame = SelectedProfile.SaveGames[index - 1];
+
+    }
+    internal void SetGlobalHotkeys()
+    {
+        void SetSingleHotkey(Hotkey hotkey, string name, EventHandler<HotkeyEventArgs> eventArgs)
+        {
+            if (hotkey.Key is Key.None || Config.Settings.GlobalHotkeys is false)
+                HotkeyManager.Current.Remove(name);
+            else
+                HotkeyManager.Current.AddOrReplace(name, hotkey.Key, hotkey.Modifiers, eventArgs);
+        }
+
+        SetSingleHotkey(Config.Settings.Import, "Import", HotkeyImport);
+        SetSingleHotkey(Config.Settings.Load, "Load", HotkeyLoad);
+        SetSingleHotkey(Config.Settings.Next, "Next", HotkeyNext);
+        SetSingleHotkey(Config.Settings.Prev, "Prev", HotkeyPrev);
     }
 }

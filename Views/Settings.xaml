@@ -11,11 +11,6 @@
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen"
         ui:WindowHelper.UseModernWindowStyle="True">
-  <b:Interaction.Triggers>
-    <b:EventTrigger EventName="Closed">
-      <b:InvokeCommandAction Command="{Binding SetGlobalHotkeysCommad}"/>
-    </b:EventTrigger>
-  </b:Interaction.Triggers>
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="140"/>
@@ -46,9 +41,9 @@
         <Label Margin="0,12,0,0" Content="Global Hotkeys:" Height="20" FontSize="13" Foreground="White"/>
       </StackPanel>
       <StackPanel Grid.Column="1" Grid.Row="1" Margin="5">
-        <CheckBox Name="chbUpdates" FontSize="15" Foreground="White" IsChecked="{Binding CheckUpdates}"/>
-        <CheckBox Name="chbTop" FontSize="15" Foreground="White" IsChecked="{Binding OnTop}"/>
-        <CheckBox Name="chbGlobalHotKey" FontSize="15" Foreground="White" IsChecked="{Binding GlobalHotkeys}"/>
+        <CheckBox Name="chbUpdates" FontSize="15" Foreground="White" IsChecked="{Binding Settings.CheckUpdates}"/>
+        <CheckBox Name="chbTop" FontSize="15" Foreground="White" IsChecked="{Binding Settings.StaysOnTop}"/>
+        <CheckBox Name="chbGlobalHotKey" FontSize="15" Foreground="White" IsChecked="{Binding Settings.GlobalHotkeys}"/>
       </StackPanel>
     </Grid>
     <Grid Margin="10,0,10,0" Grid.Row="1">
@@ -78,7 +73,7 @@
            Text="{Binding LoadHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="PreviewKeyDown">
-              <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+              <b:InvokeCommandAction Command="{Binding SetLoadHotkeyCommand}"
                                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
             <b:EventTrigger EventName="GotFocus">
@@ -102,7 +97,7 @@
            Text="{Binding NextHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="PreviewKeyDown">
-              <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+              <b:InvokeCommandAction Command="{Binding SetNextHotkeyCommand}"
                                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
             <b:EventTrigger EventName="GotFocus">
@@ -126,7 +121,7 @@
            Text="{Binding PrevHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="PreviewKeyDown">
-              <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+              <b:InvokeCommandAction Command="{Binding SetPrevHotkeyCommand}"
                                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
             <b:EventTrigger EventName="GotFocus">
@@ -150,7 +145,7 @@
            Text="{Binding ImportHotkey, Mode=OneWay, TargetNullValue=&lt; not set &gt;}">
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="PreviewKeyDown">
-              <b:InvokeCommandAction Command="{Binding SetHotkeyCommand}"
+              <b:InvokeCommandAction Command="{Binding SetImportHotkeyCommand}"
                                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
             <b:EventTrigger EventName="GotFocus">

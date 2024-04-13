@@ -10,7 +10,6 @@ namespace SaveGameManager.Services;
 public class DataService : IDataService
 {
     private Config _config = new();
-    private Profile? _selectedProfile;
     private readonly string _filePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\SaveGameManager\profile.json";
     private readonly string _path = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\SaveGameManager";
     private readonly IWindowService _windowService;
@@ -28,23 +27,11 @@ public class DataService : IDataService
     }
     #endregion
 
-    public Profile? SelectedProfile
-    {
-        get => _selectedProfile;
-        set
-        {
-            if (_selectedProfile == value)
-                return;
-
-            _selectedProfile = value;
-
-            if (_selectedProfile != null)
-                Config.ActiveProfile = _selectedProfile.Id;
-        }
-    }
-    public Config Config { get => _config; }
-    private ISettingsService Settings { get; }
+    public Profile? SelectedProfile { get; set; }
     public Savegame? SelectedSaveGame { get; set; }
+    public Config Config { get => _config; }
+
+    private ISettingsService Settings { get; }
 
     #region internal methods
     internal void InitConfig()
@@ -84,6 +71,10 @@ public class DataService : IDataService
     #endregion
 
     #region public methods
-    public async void SaveConfigAsync() => await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(_config));
+    public async void SaveConfigAsync()
+    {
+        Config.ActiveProfile = SelectedProfile?.Id ?? "";
+        await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(_config));
+    }
     #endregion
 }

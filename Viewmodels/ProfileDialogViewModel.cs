@@ -166,7 +166,7 @@ public class ProfileDialogViewModel : ViewModelBase
         _dataService.Config.Profiles.Remove(SelectedProfile);
 
         if (_dataService.Config.Profiles.Count > 0)
-            _dataService.SelectedProfile ??= _dataService.Config.Profiles.First();
+            _dataService.SelectedProfile = _dataService.Config.Profiles.First();
         else
             _dataService.SelectedProfile = null;
 

@@ -21,5 +21,5 @@ public class Profile : OberservableObject
     }
     public string CreationTime { get; set; } = DateTime.Now.ToString();
     [JsonIgnore]
-    public ObservableCollection<Savegame> SaveGames { get; set; } = new ObservableCollection<Savegame>();
+    public ObservableCollection<Savegame> SaveGames { get; set; } = [];
 }

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using SaveGameManager.Viewmodels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using SaveGameManager.Services;
 
 namespace SaveGameManager.Handler;
 public class DirectoryService(IDataService dataService, IWindowService windowService, ISettingsService settings, NotifyBoxViewModel notifyBox) : IDirectoryService
@@ -196,7 +196,11 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
     }
     public void LoadSaveGame(Savegame? savegame)
     {
-        if (savegame is null) return;
+        if (savegame == null)
+        {
+            WindowService.NotifierWarning($"Select a savegame");
+            return;
+        }
 
         try
         {

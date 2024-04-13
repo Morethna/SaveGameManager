@@ -10,18 +10,12 @@ using System.Threading.Tasks;
 
 namespace SaveGameManager.Services;
 
-public class GitHubService : IGitHubService
+public class GitHubService(IWindowService windowService, GitHubViewModel gitHubView, IDataService dataService) : IGitHubService
 {
-    private readonly IWindowService _windowService;
-    private readonly GitHubViewModel _gitHubView;
-
-    public GitHubService(IWindowService windowService, GitHubViewModel gitHubView)
-    {
-        _windowService = windowService;
-        _gitHubView = gitHubView;
-    }
     public async Task CheckGitHubNewerVersion()
     {
+        if (!dataService.Config.Settings.CheckUpdates) return;
+
         GitHubClient client = new(new ProductHeaderValue("SaveGameManager"));
         IReadOnlyList<Release> releases = await client.Repository.Release.GetAll("Morethna", "SaveGameManager");
 
@@ -44,10 +38,10 @@ public class GitHubService : IGitHubService
         if (versionComparison < 0)
         {
             //The version on GitHub is more up to date than this local release.
-            _gitHubView.CurrentVersion = localVersion.ToString();
-            _gitHubView.NewVersion = latestGitHubVersion.ToString();
-            _gitHubView.Url = release.HtmlUrl;
-            _windowService.OpenWindow(_gitHubView);
+            gitHubView.CurrentVersion = localVersion.ToString();
+            gitHubView.NewVersion = latestGitHubVersion.ToString();
+            gitHubView.Url = release.HtmlUrl;
+            windowService.OpenWindow(gitHubView);
         }
     }
 }
