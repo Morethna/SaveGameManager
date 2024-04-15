@@ -26,6 +26,7 @@
              Margin="5"
              TextWrapping="Wrap"
              Background="#E5484848"
+             Foreground="White"
              ScrollViewer.CanContentScroll="True"
              IsReadOnly="True"
              Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}">
@@ -35,12 +36,14 @@
         </Style>
       </TextBox.Resources>
     </TextBox>
+    <Rectangle Grid.Row="1" Fill="Black"/>
     <Button x:Name="btnOk" 
             Content="OK"
             Grid.Row="1" 
             HorizontalAlignment="Left"
             Margin="5"
             Background="#E5484848"
+            Foreground="White"
             Width="60" Height="27"
             FontSize="12">
       <b:Interaction.Triggers>

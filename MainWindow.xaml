@@ -10,6 +10,7 @@
         Height="650" Width="500" 
         MinHeight="350" MinWidth="300"
         WindowStartupLocation="CenterScreen"
+        ui:ThemeManager.IsThemeAware="True"
         ui:WindowHelper.UseModernWindowStyle="True"
         Topmost="{Binding Config.Settings.StaysOnTop, UpdateSourceTrigger=PropertyChanged}">
   <b:Interaction.Triggers>
@@ -42,68 +43,51 @@
   </Window.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="50"/>
+      <ColumnDefinition Width="40"/>
+      <ColumnDefinition Width="130"/>
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
-      <RowDefinition Height="50"/>
+      <RowDefinition Height="40"/>
+      <RowDefinition Height="40"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="40"/>
     </Grid.RowDefinitions>
     <Image Source="/Resources/lies-of-p-4k-9c.jpg"
            Stretch="UniformToFill"
-           Grid.RowSpan="3"
-           Grid.ColumnSpan="2">
+           Grid.RowSpan="4"
+           Grid.ColumnSpan="3">
       <Image.Effect>
         <BlurEffect RenderingBias="Quality" KernelType="Gaussian" Radius="6"/>
       </Image.Effect>
     </Image>
-    <ComboBox x:Name="cboProfile"
-              Grid.Column="1"
-              BorderThickness="1"
-              Height="35"
-              MinHeight="25" 
-              Margin="0,8,0,0"
-              FontSize="12"
-              Background="#B2484848"
-              Foreground="White"
-              SelectedItem= "{Binding SelectedProfile}"
-              ItemsSource="{Binding Config.Profiles}"
-              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
-      <ComboBox.ItemTemplate>
-        <DataTemplate>
-          <TextBlock Margin="2" Text="{Binding Name}"/>
-        </DataTemplate>
-      </ComboBox.ItemTemplate>
-    </ComboBox>
     <Button x:Name="btSettings" 
-            Grid.Column="0"
-            Height="43" Width="43"
-            BorderBrush="{x:Null}" 
-            Foreground="{x:Null}"
-            Style="{StaticResource MyButton}">
+        Grid.Column="0"
+        Margin="2.5,0,0,0"
+        Height="25" Width="25"
+        Style="{StaticResource MyButton}">
       <Button.Background>
-        <ImageBrush ImageSource="/Resources/cogwheel.png" Stretch="Fill" TileMode="None"/>
+        <ImageBrush ImageSource="/Resources/cogwheel.png" Stretch="Uniform" TileMode="None"/>
       </Button.Background>
       <Button.ContextMenu>
         <ContextMenu Name="cmSetting">
           <MenuItem x:Name="mtAbout"
-                    Header="About"
-                    Command="{Binding OpenAboutDialogCommand, UpdateSourceTrigger=PropertyChanged}">
+                Header="About"
+                Command="{Binding OpenAboutDialogCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/P_icon.png" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem x:Name="mtProfiles" 
-                    Header="Profiles"
-                    Command="{Binding OpenProfileDialogCommand, UpdateSourceTrigger=PropertyChanged}">
+                Header="Profiles"
+                Command="{Binding OpenProfileDialogCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/P_icon.png" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem x:Name="mtSettings"
-                    Header="Settings"
-                    Command="{Binding OpenSettingsDialogCommand, UpdateSourceTrigger=PropertyChanged}">
+                Header="Settings"
+                Command="{Binding OpenSettingsDialogCommand, UpdateSourceTrigger=PropertyChanged}">
             <MenuItem.Icon>
               <Image Source="/Resources/P_icon.png" />
             </MenuItem.Icon>
@@ -117,9 +101,60 @@
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </Button>
-    <ui:ListView x:Name="tvSavegame"
-              Grid.Row="1"
+    <ComboBox x:Name="cboProfile"
+              Grid.Column="1"
               Grid.ColumnSpan="2"
+              BorderThickness="1"
+              Margin="0,5,10,0"
+              FontSize="12"
+              MinWidth="248"
+              Background="#B2484848"
+              Foreground="White"
+              SelectedItem= "{Binding SelectedProfile}"
+              ItemsSource="{Binding Config.Profiles}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
+      <ComboBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Margin="2" Text="{Binding Name}"/>
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
+    <Image Source="/Resources/sort-icon.png" 
+           Margin="2.5,0,0,5"
+             Height="25" Width="25"
+             Grid.Column="0" Grid.Row="1"/>
+    <ComboBox Grid.Column="1" Grid.Row="1"
+              Margin="0,3,0,0"
+              MinWidth="125"
+              ItemsSource="{Binding SortEnumArray}"  
+              SelectedItem="{Binding Config.Settings.Sort}"
+              Background="#B2484848"
+              Foreground="White"
+              IsEnabled="{Binding SettingsService.MainUiEnabled}">
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="SelectionChanged">
+          <b:InvokeCommandAction Command="{Binding SortCommand}"
+                                 PassEventArgsToCommand="True"/>
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+    </ComboBox>
+    <TextBox Margin="0,2,10,5"
+             Grid.Column="2" Grid.Row="1"
+             Background="#B2484848"
+             Foreground="White"
+             ui:ControlHelper.PlaceholderText="Search..."
+             ui:ControlHelper.PlaceholderForeground="White"
+             Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+             IsEnabled="{Binding SettingsService.MainUiEnabled}">
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="TextChanged">
+          <b:InvokeCommandAction Command="{Binding FilterCommand}"/>
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+    </TextBox>
+      <ui:ListView x:Name="tvSavegame"
+              Grid.Row="2"
+              Grid.ColumnSpan="3"
               ScrollViewer.CanContentScroll="True"
               Margin="10,0,10,0"
               Background="#B2484848"
@@ -170,7 +205,7 @@
       </ui:ListView.ItemTemplate>
     </ui:ListView>
     <StackPanel Orientation="Horizontal" 
-                Grid.Row="3" Grid.ColumnSpan="2"
+                Grid.Row="3" Grid.ColumnSpan="3"
                 Margin="10,5,0,0">
       <Button x:Name="btnImport"
               Width="60" Height="27"
@@ -178,8 +213,8 @@
               Background="#B2484848"
               Foreground="White"
               Content="Import"
-              Command="{Binding CreateSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
-              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
+              Command="{Binding CreateSaveGameCommand}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>
@@ -193,8 +228,8 @@
               Foreground="White"
               FontSize="12"
               Content="Replace"
-              Command="{Binding ReplaceSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
-              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
+              Command="{Binding ReplaceSaveGameCommand}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>
@@ -208,8 +243,8 @@
               Foreground="White"
               FontSize="12"
               Content="Load"
-              Command="{Binding LoadSaveGameCommand, UpdateSourceTrigger=PropertyChanged}"
-              IsEnabled="{Binding SettingsService.MainUiEnabled, UpdateSourceTrigger=PropertyChanged}">
+              Command="{Binding LoadSaveGameCommand}"
+              IsEnabled="{Binding SettingsService.MainUiEnabled}">
         <Button.Resources>
           <Style TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5"/>

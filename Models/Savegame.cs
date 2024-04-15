@@ -1,10 +1,12 @@
 ﻿using SaveGameManager.Core;
+using System;
 
 namespace SaveGameManager.Models;
 public class Savegame : OberservableObject
 {
     private string _name = string.Empty;
     private string _path = string.Empty;
+    private DateTime _creationDate;
     public string Name
     {
         get => _name;
@@ -27,6 +29,18 @@ public class Savegame : OberservableObject
 
             _path = value;
             OnPropertyChanged(nameof(Path));
+        }
+    }
+    public DateTime CreationDate
+    {
+        get => _creationDate;
+        set
+        {
+            if (_creationDate == value)
+                return;
+
+            _creationDate = value;
+            OnPropertyChanged(nameof(CreationDate));
         }
     }
 }

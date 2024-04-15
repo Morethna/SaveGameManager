@@ -18,7 +18,7 @@ public class DataService : IDataService
     //private readonly ILogger<DataService> //_logger;
 
     #region ctor
-    public DataService(ISettingsService settings, IWindowService windowService, NotifyBoxViewModel notifyBox)
+    public DataService(IUiSettingsService settings, IWindowService windowService, NotifyBoxViewModel notifyBox)
     {
         Settings = settings;
         _windowService = windowService;
@@ -31,7 +31,7 @@ public class DataService : IDataService
     public Savegame? SelectedSaveGame { get; set; }
     public Config Config { get => _config; }
 
-    private ISettingsService Settings { get; }
+    private IUiSettingsService Settings { get; }
 
     #region internal methods
     internal void InitConfig()

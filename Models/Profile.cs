@@ -7,6 +7,7 @@ namespace SaveGameManager.Models;
 public class Profile : OberservableObject
 {
     private string _name = string.Empty;
+    private ObservableCollection<Savegame> _savegames = [];
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name
     {
@@ -21,5 +22,15 @@ public class Profile : OberservableObject
     }
     public string CreationTime { get; set; } = DateTime.Now.ToString();
     [JsonIgnore]
-    public ObservableCollection<Savegame> SaveGames { get; set; } = [];
+    public ObservableCollection<Savegame> SaveGames
+    {
+        get => _savegames;
+        set
+        {
+            if (_savegames == value)
+                return;
+            _savegames = value;
+            OnPropertyChanged(nameof(SaveGames));
+        }
+    }
 }

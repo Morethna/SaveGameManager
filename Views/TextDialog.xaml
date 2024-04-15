@@ -30,7 +30,9 @@
              Background="#B2484848"
              Margin="10,-5,10,0"
              Height="22"
-             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}">
+             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+             ui:ControlHelper.PlaceholderText="Enter name..."
+             ui:ControlHelper.PlaceholderForeground="White">
       <TextBox.Resources>
         <Style TargetType="Border">
           <Setter Property="CornerRadius" Value="5"/>
@@ -41,6 +43,7 @@
       <Button x:Name="btnOk" 
               Content="Okay"
               Background="#E5484848"
+              Foreground="White"
               Width="60" Height="27"
               FontSize="12"
               Margin="10,10,0,0"
@@ -54,6 +57,7 @@
       <Button x:Name="btnCancel"
               Content="Cancel"
               Background="#E5484848"
+              Foreground="White"
               Width="60" Height="27"
               FontSize="12"
               Margin="10,5,0,0">

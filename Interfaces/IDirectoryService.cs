@@ -1,4 +1,5 @@
 ﻿using SaveGameManager.Models;
+using System.Collections.ObjectModel;
 
 namespace SaveGameManager.Interfaces;
 public interface IDirectoryService
@@ -13,4 +14,5 @@ public interface IDirectoryService
     public void CreateProfile(Profile? profile);
     public void LoadProfile(Profile? profile);
     public void ReplaceSavegame(Savegame? savegame);
+    public ObservableCollection<Savegame> SortSavegames(ObservableCollection<Savegame> savegames);
 }

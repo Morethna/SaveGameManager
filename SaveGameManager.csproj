@@ -34,6 +34,7 @@
 	<None Remove="Resources\P_16.png" />
 	<None Remove="Resources\P_black.png" />
 	<None Remove="Resources\P_icon.png" />
+	<None Remove="Resources\sort-icon.png" />
 	<None Remove="Resources\Twitch.png" />
 	<None Remove="Resources\ytub_icon.png" />
   </ItemGroup>
@@ -71,6 +72,7 @@
 	<Resource Include="Resources\P_black.png" />
 	<Resource Include="Resources\P_icon.png" />
 	<Resource Include="Resources\Sophia.jpg" />
+	<Resource Include="Resources\sort-icon.png" />
 	<Resource Include="Resources\Twitch.png" />
 	<Resource Include="Resources\ytub_icon.png" />
   </ItemGroup>

@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SaveGameManager.Handler;
 using SaveGameManager.Interfaces;
 using SaveGameManager.Services;
 using SaveGameManager.Viewmodels;
-using SaveGameManager.Views;
 using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -24,7 +21,7 @@ namespace SaveGameManager
 
             services.AddSingleton<IDataService, DataService>();
             services.AddSingleton<IDirectoryService, DirectoryService>();
-            services.AddSingleton<ISettingsService, SettingsService>();
+            services.AddSingleton<IUiSettingsService, UiSettingsService>();
             services.AddSingleton<IWindowService, WindowService>();
             services.AddSingleton<IGitHubService, GitHubService>();
 

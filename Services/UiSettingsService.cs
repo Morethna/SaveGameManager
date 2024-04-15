@@ -2,12 +2,12 @@
 using SaveGameManager.Interfaces;
 
 namespace SaveGameManager.Services;
-public class SettingsService : OberservableObject, ISettingsService
+public class UiSettingsService : OberservableObject, IUiSettingsService
 {
     private bool _mainUiEnabled = false;
     private bool _profileUiEnabled = false;
 
-    public SettingsService() { }
+    public UiSettingsService() { }
     public bool MainUiEnabled
     {
         get => _mainUiEnabled;

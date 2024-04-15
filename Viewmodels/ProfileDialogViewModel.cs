@@ -13,7 +13,7 @@ namespace SaveGameManager.Viewmodels;
 public class ProfileDialogViewModel : ViewModelBase
 {
     private readonly IDataService _dataService;
-    private ISettingsService _settingsService;
+    private IUiSettingsService _settingsService;
     private readonly IDirectoryService _directoryService;
     private readonly IWindowService _windowService;
     private readonly TextDialogViewModel _textDialog;
@@ -21,7 +21,7 @@ public class ProfileDialogViewModel : ViewModelBase
     private Profile? _selectedProfile;
 
     public ProfileDialogViewModel(IDataService dataService,
-        ISettingsService settingsService,
+        IUiSettingsService settingsService,
         IDirectoryService directoryService,
         IWindowService windowService,
         TextDialogViewModel textDialog,
@@ -63,7 +63,7 @@ public class ProfileDialogViewModel : ViewModelBase
             OnPropertyChanged(nameof(SelectedProfile));
         }
     }
-    public ISettingsService SettingsService
+    public IUiSettingsService SettingsService
     {
         get => _settingsService;
         set

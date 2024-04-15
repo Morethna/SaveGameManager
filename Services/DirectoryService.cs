@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using SaveGameManager.Viewmodels;
-using SaveGameManager.Services;
+using SaveGameManager.Enums;
+using System.Collections.ObjectModel;
 
-namespace SaveGameManager.Handler;
-public class DirectoryService(IDataService dataService, IWindowService windowService, ISettingsService settings, NotifyBoxViewModel notifyBox) : IDirectoryService
+namespace SaveGameManager.Services;
+public class DirectoryService(IDataService dataService, IWindowService windowService, IUiSettingsService settings, NotifyBoxViewModel notifyBox) : IDirectoryService
 {
     private static readonly Random random = new();
 
@@ -16,7 +17,7 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
     private string SaveGameFolder { get => Path.Combine(GameFolder, "SaveGameManager"); }
     private string GameFolder { get => dataService.Config.Gamepath; }
     private IWindowService WindowService { get; } = windowService;
-    private ISettingsService Settings { get; } = settings;
+    private IUiSettingsService Settings { get; } = settings;
     #endregion
 
 
@@ -260,12 +261,17 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             var saveGamePath = Path.Combine(SaveGameFolder, profile.Id);
             if (Directory.Exists(saveGamePath))
             {
-                foreach (string d in Directory.GetDirectories(saveGamePath))
+                foreach (string dir in Directory.GetDirectories(saveGamePath))
                 {
-                    var p = profile.SaveGames.Where(x => x.Path == d);
-                    if (p.Count() == 0)
-                        profile.SaveGames.Add(new Savegame { Name = d.Replace($@"{saveGamePath}\", ""), Path = d });
+                    var p = profile.SaveGames.Where(x => x.Path == dir);
+                    if (!p.Any())
+                    {
+                        var dirInfo = Directory.GetCreationTime(dir);
+                        profile.SaveGames.Add(new Savegame { Name = dir.Replace($@"{saveGamePath}\", ""), Path = dir, CreationDate = dirInfo });
+                    }
+                        
                 }
+                profile.SaveGames = new ObservableCollection<Savegame>(SortSavegames(profile.SaveGames));
             }
         }
         catch (Exception ex)
@@ -275,6 +281,20 @@ public class DirectoryService(IDataService dataService, IWindowService windowSer
             WindowService.OpenWindow(notifyBox);
         }
     }
+    public ObservableCollection<Savegame> SortSavegames(ObservableCollection<Savegame> savegames)
+    {
+        if (savegames.Count < 2) return savegames;
+
+        _ = dataService.Config.Settings.Sort switch
+        {
+            SortEnum.Ascending => savegames = [..savegames.OrderBy(x => x.Name)],
+            SortEnum.Descending => savegames = [..savegames.OrderByDescending(x => x.Name)],
+            SortEnum.Creation => savegames = [..savegames.OrderBy(x => x.CreationDate)],
+            _ => throw new NotImplementedException()
+        };
+        return savegames;
+    }
+
     public void ReplaceSavegame(Savegame? savegame)
     {
         if (savegame is null) return;

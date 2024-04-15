@@ -41,6 +41,7 @@
              Margin="5"
              TextWrapping="Wrap"
              Background="#E5484848"
+             Foreground="White"
              ScrollViewer.CanContentScroll="True"
              ScrollViewer.VerticalScrollBarVisibility="Visible"
              IsReadOnly="True"
@@ -51,6 +52,7 @@
         </Style>
       </TextBox.Resources>
     </TextBox>
+    <Rectangle Grid.Row="1" Fill="Black" Grid.ColumnSpan="2"/>
     <StackPanel Grid.Row="1" 
                Grid.ColumnSpan="2"
                Orientation="Horizontal" 
@@ -59,6 +61,7 @@
       <Button x:Name="btnYes" 
              Content="Yes"
              Background="#E5484848"
+              Foreground="White"
              Width="60" Height="27"
              FontSize="12"
              Command="{Binding SetResultCommand, UpdateSourceTrigger=PropertyChanged}">
@@ -71,6 +74,7 @@
       <Button x:Name="btnNo"
              Content="No"
              Background="#E5484848"
+             Foreground="White"
              Width="60" Height="27"
              FontSize="12"
              Margin="10,0,0,0">

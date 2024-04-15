@@ -7,14 +7,17 @@ using NHotkey.Wpf;
 using static System.Net.Mime.MediaTypeNames;
 using NHotkey;
 using System.Linq;
+using SaveGameManager.Enums;
+using System.Collections.ObjectModel;
 
 namespace SaveGameManager.Viewmodels;
 public class MainViewModel : ViewModelBase
 {
+    private string _filter = string.Empty;
     private Profile? _selectedProfile;
     private Savegame? _selectedSavegame;
-    private ISettingsService _settingsService;
-    private IDataService _dataService;
+    private IUiSettingsService _settingsService;
+    private readonly IDataService _dataService;
     private readonly IDirectoryService _directoryService;
     private readonly IWindowService _windowService;
     private readonly TextDialogViewModel _textDialog;
@@ -23,7 +26,7 @@ public class MainViewModel : ViewModelBase
     private readonly NotifyBoxYesNoViewModel _notifyBoxYesNo;
     private readonly SettingsDialogViewModel _settingsDialog;
 
-    public MainViewModel(IDataService dataService, ISettingsService settingsService, IDirectoryService directoryService, IWindowService windowService,
+    public MainViewModel(IDataService dataService, IUiSettingsService settingsService, IDirectoryService directoryService, IWindowService windowService,
         TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, NotifyBoxYesNoViewModel notifyBox, SettingsDialogViewModel settingsDialog) 
     {
         _dataService = dataService;
@@ -50,7 +53,26 @@ public class MainViewModel : ViewModelBase
         OpenSettingsDialogCommand = new DelegateCommand(OpenSettingsDialog);
         KeyDownCommand = new DelegateCommand(KeyDown);
         LoadCommand = new DelegateCommand(Load);
+        SortCommand = new DelegateCommand(Sort);
     }
+    public static Array SortEnumArray
+    {
+        get => Enum.GetValues(typeof(SortEnum)); 
+    }
+
+    public string Filter
+    {
+        get => _filter;
+        set
+        {
+            if (_filter == value)
+                return;
+            _filter = value;
+            FilterSavegames(_filter);
+            OnPropertyChanged(nameof(Filter));
+        }
+    }
+
     public Profile? SelectedProfile
     {
         get => _selectedProfile;
@@ -82,7 +104,7 @@ public class MainViewModel : ViewModelBase
 
     public Config Config { get => _dataService.Config; }
 
-    public ISettingsService SettingsService
+    public IUiSettingsService SettingsService
     {
         get => _settingsService;
         set
@@ -106,9 +128,15 @@ public class MainViewModel : ViewModelBase
     public ICommand KeyDownCommand { get; set; }
     public ICommand LoadCommand { get; set; }
     public ICommand OpenSettingsDialogCommand { get; set; }
+    public ICommand SortCommand { get; set; }
+    public ICommand FilterCommand { get; set; }
 
 
-    private void ImportSaveGame(object obj) =>_directoryService.CreateSaveGame(SelectedProfile);
+    private void ImportSaveGame(object obj)
+    {
+        _directoryService.CreateSaveGame(SelectedProfile);
+        FilterSavegames(Filter);
+    }
     private void LoadSaveGame(object obj) => _directoryService.LoadSaveGame(SelectedSaveGame);
     private void Load(object obj)
     {
@@ -194,17 +222,32 @@ public class MainViewModel : ViewModelBase
         if (key.Key == Key.Delete)
             DeleteSaveGame(null);
     }
+    private void Sort(object obj)
+    {
+        if (SelectedProfile is not null)
+            SelectedProfile.SaveGames = new ObservableCollection<Savegame>(_directoryService.SortSavegames(SelectedProfile.SaveGames)); 
+    }
+    private void FilterSavegames(string filter)
+    {
+        if (SelectedProfile is null) return;
 
+        _directoryService.LoadProfile(SelectedProfile);
+
+        if (string.IsNullOrEmpty(filter)) return;
+
+        var sgList = new ObservableCollection<Savegame>(SelectedProfile.SaveGames.Where(x => x.Name.Contains(filter, StringComparison.CurrentCultureIgnoreCase)));
+        SelectedProfile.SaveGames = sgList;
+    }
     internal void HotkeyImport(object obj, HotkeyEventArgs e)
     {
         if (e.Name is "Import")
-            _directoryService.CreateSaveGame(SelectedProfile);
+            ImportSaveGame(obj);
         e.Handled = true;
     }
     internal void HotkeyLoad(object obj, HotkeyEventArgs e)
     {
         if (e.Name is "Load")
-            _directoryService.LoadSaveGame(SelectedSaveGame);
+            LoadSaveGame(obj);
         e.Handled = true;
     }
     internal void HotkeyNext(object obj, HotkeyEventArgs e)
