@@ -3,16 +3,19 @@ This a tool designed to manage savegames for Lies of P.
 
 **Download:** [Latest Release](https://github.com/Morethna/SaveGameManager/releases)
 ## ![P_50](https://github.com/Morethna/SaveGameManager/assets/131201617/20275c1d-8dad-4510-a0b3-3ca9e36cc9d4) Features
-![SaveGameManager - Lies of P](https://github.com/Morethna/SaveGameManager/assets/131201617/39dfa0b2-5c99-4ca8-b9c8-14e6e27e48da)
-1. Dropdown menu of all available profiles
-2. Opens a context menu with about and profile settings.
-3. List of all the safegames of your selected profile. Double click on a savegame loads this savegame(5).
-4. Creates a copy of the game's current savegame and adds this to the list of savegames(3).
-5. Replaces the games current savegame with the currently selected savegame of the list(3).
-6. Replaces the currently selected savegame of the list(3) with the games current savegame.
+![SaveGameManager - Lies of P](https://github.com/Morethna/SaveGameManager/assets/131201617/6a1b8b77-d032-4339-803f-294e7a4225f9)
+
+1. Dropdown menu for settings, profiles and about Pages
+2. List of all profiles.
+3. List of all available sorting options.
+4. Searchbox to filter the savegames.
+5. List of all savegames.
+6. Creates a copy of the game's current savegame and adds this to the list.
+7. Replaces the games current savegame with the currently selected savegame.
+8. Replaces the currently selected savegame with the games current savegame.
 
 ## ![P_50](https://github.com/Morethna/SaveGameManager/assets/131201617/20275c1d-8dad-4510-a0b3-3ca9e36cc9d4) Getting started
-On Load the program will create/load the profile.xml in "%appdata%/SaveGameManager".
+On Load the program will create/load the profile.json in "%appdata%/SaveGameManager".
 ### Set Gamefolder
 Click on the settings Button and click on the profiles in the context menu.
 Click on Browser and select your lies of P savegame folder.
@@ -23,13 +26,16 @@ Example: D:\Program Files (x86)\Steam\steamapps\common\Lies of P\LiesofP\Saved\S
 
 ### Add Profile
 Click on add and enter a profile name
+![Gamefolder](https://github.com/Morethna/SaveGameManager/assets/131201617/b7471d48-5f86-4407-a7bf-839b4090b8c0)
+## Settings
+Click on the settings Button and the settings option in the context menu.
 
-![Add Profile](https://github.com/Morethna/SaveGameManager/assets/131201617/d15809f9-15e6-4f09-baa3-1c6e30daddb6)
+![Settings](https://github.com/Morethna/SaveGameManager/assets/131201617/57e4e9ef-9f45-49da-ab57-ea31db1df9ce)
 
-## Creating Savegames
-Click on Import, enter a savegamename and click on Ok or press Enter
-
-![Add Savegame](https://github.com/Morethna/SaveGameManager/assets/131201617/77d377b7-ea6e-4b5c-a180-937b73d35a89)
+You're able to set a few options:
+- Checking for future Update to always be up to date
+- Always on top feature
+- Using Global Hotkeys (Import, Load, Next & Prev savegame selection)
 
 > [!IMPORTANT]
 > In order to create a functional save game it is important to save twice, because the save game is splitted in 2 seperated files.
