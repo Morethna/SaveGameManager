@@ -4,11 +4,11 @@ using SaveGameManager.Models;
 using System.Windows.Input;
 using System;
 using NHotkey.Wpf;
-using static System.Net.Mime.MediaTypeNames;
 using NHotkey;
 using System.Linq;
 using SaveGameManager.Enums;
 using System.Collections.ObjectModel;
+using SaveGameManager.Views;
 
 namespace SaveGameManager.Viewmodels;
 public class MainViewModel : ViewModelBase
@@ -25,9 +25,11 @@ public class MainViewModel : ViewModelBase
     private readonly AboutViewModel _aboutDialog;
     private readonly NotifyBoxYesNoViewModel _notifyBoxYesNo;
     private readonly SettingsDialogViewModel _settingsDialog;
+    private readonly NotifyBoxViewModel _errNotify;
 
     public MainViewModel(IDataService dataService, IUiSettingsService settingsService, IDirectoryService directoryService, IWindowService windowService,
-        TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, NotifyBoxYesNoViewModel notifyBox, SettingsDialogViewModel settingsDialog) 
+        TextDialogViewModel textDialog, ProfileDialogViewModel profileDialog, AboutViewModel aboutDialog, NotifyBoxYesNoViewModel notifyBox, SettingsDialogViewModel settingsDialog,
+        NotifyBoxViewModel errNotify)
     {
         _dataService = dataService;
         _settingsService = settingsService;
@@ -38,6 +40,7 @@ public class MainViewModel : ViewModelBase
         _aboutDialog = aboutDialog;
         _notifyBoxYesNo = notifyBox;
         _settingsDialog = settingsDialog;
+        _errNotify = errNotify;
 
         _selectedProfile = _dataService.SelectedProfile;
         _selectedSavegame = _dataService.SelectedSaveGame;
@@ -57,7 +60,7 @@ public class MainViewModel : ViewModelBase
     }
     public static Array SortEnumArray
     {
-        get => Enum.GetValues(typeof(SortEnum)); 
+        get => Enum.GetValues(typeof(SortEnum));
     }
 
     public string Filter
@@ -151,7 +154,7 @@ public class MainViewModel : ViewModelBase
             _windowService.NotifierWarning($"Select a savegame");
             return;
         }
-            
+
         var repSG = SelectedSaveGame.Name;
 
         try
@@ -169,7 +172,7 @@ public class MainViewModel : ViewModelBase
         {
             _windowService.NotifierError($"Something went wrong, while replacing the Savegame \"{repSG}\".\r\n{ex.Message}");
         }
-}
+    }
     private void DeleteSaveGame(object? obj)
     {
         if (SelectedSaveGame == null) return;
@@ -182,7 +185,7 @@ public class MainViewModel : ViewModelBase
             _windowService.OpenWindowDialog(_notifyBoxYesNo, this);
 
             if (!_notifyBoxYesNo.Result) return;
-            
+
             _directoryService.DeleteSaveGame(SelectedSaveGame);
             SelectedProfile?.SaveGames.Remove(SelectedSaveGame);
 
@@ -203,7 +206,7 @@ public class MainViewModel : ViewModelBase
 
         if (!string.IsNullOrEmpty(_textDialog.Name) && _textDialog.Ok)
             _directoryService.RenameSaveGameFolder(SelectedSaveGame, _textDialog.Name);
-            
+
     }
     private void OpenProfileDialog(object obj)
     {
@@ -215,7 +218,7 @@ public class MainViewModel : ViewModelBase
     {
         _windowService.OpenWindowDialog(_settingsDialog, this);
         SetGlobalHotkeys();
-    }    
+    }
     private void KeyDown(object obj)
     {
         var key = (KeyEventArgs)obj;
@@ -225,7 +228,7 @@ public class MainViewModel : ViewModelBase
     private void Sort(object obj)
     {
         if (SelectedProfile is not null)
-            SelectedProfile.SaveGames = new ObservableCollection<Savegame>(_directoryService.SortSavegames(SelectedProfile.SaveGames)); 
+            SelectedProfile.SaveGames = new ObservableCollection<Savegame>(_directoryService.SortSavegames(SelectedProfile.SaveGames));
     }
     private void FilterSavegames(string filter)
     {
@@ -292,17 +295,30 @@ public class MainViewModel : ViewModelBase
     }
     internal void SetGlobalHotkeys()
     {
-        void SetSingleHotkey(Hotkey hotkey, string name, EventHandler<HotkeyEventArgs> eventArgs)
+        Hotkey SetSingleHotkey(Hotkey hotkey, string name, EventHandler<HotkeyEventArgs> eventArgs)
         {
-            if (hotkey.Key is Key.None || Config.Settings.GlobalHotkeys is false)
-                HotkeyManager.Current.Remove(name);
-            else
-                HotkeyManager.Current.AddOrReplace(name, hotkey.Key, hotkey.Modifiers, eventArgs);
+            try
+            {
+                if (hotkey.Key is Key.None || Config.Settings.GlobalHotkeys is false)
+                    HotkeyManager.Current.Remove(name);
+                else
+                    HotkeyManager.Current.AddOrReplace(name, hotkey.Key, hotkey.Modifiers, eventArgs);
+
+                return hotkey;
+            }
+            catch (HotkeyAlreadyRegisteredException ex)
+            {
+                _errNotify.Message = $"Something went wrong, while trying to add \"{hotkey}\" to \"{name}\".\r\n{ex.Message}";
+                _errNotify.Title = "Error";
+                _windowService.OpenWindow(_errNotify);
+                return new();
+            }
         }
 
-        SetSingleHotkey(Config.Settings.Import, "Import", HotkeyImport);
-        SetSingleHotkey(Config.Settings.Load, "Load", HotkeyLoad);
-        SetSingleHotkey(Config.Settings.Next, "Next", HotkeyNext);
-        SetSingleHotkey(Config.Settings.Prev, "Prev", HotkeyPrev);
+        Config.Settings.Import = SetSingleHotkey(Config.Settings.Import, "Import", HotkeyImport);
+        Config.Settings.Load = SetSingleHotkey(Config.Settings.Load, "Load", HotkeyLoad);
+        Config.Settings.Next = SetSingleHotkey(Config.Settings.Next, "Next", HotkeyNext);
+        Config.Settings.Prev = SetSingleHotkey(Config.Settings.Prev, "Prev", HotkeyPrev);
+
     }
 }

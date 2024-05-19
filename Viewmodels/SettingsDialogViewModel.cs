@@ -22,7 +22,6 @@ public class SettingsDialogViewModel : ViewModelBase
     const string TBLoad = "tbLoad";
 
     private readonly IWindowService _windowService;
-    private readonly IDirectoryService _directoryService;
     private readonly IDataService _dataService;
 
     private string _strLoadHotkey = None;
@@ -30,7 +29,7 @@ public class SettingsDialogViewModel : ViewModelBase
     private string _strNextHotkey = None;
     private string _strRevHotkey = None;
 
-    public SettingsDialogViewModel(IWindowService windowService, IDataService dataService, IDirectoryService directoryService)
+    public SettingsDialogViewModel(IWindowService windowService, IDataService dataService)
     {
         SetImportHotkeyCommand = new DelegateCommand(SetImportHotkey);
         SetLoadHotkeyCommand = new DelegateCommand(SetLoadHotkey);
@@ -38,9 +37,9 @@ public class SettingsDialogViewModel : ViewModelBase
         SetPrevHotkeyCommand = new DelegateCommand(SetPrevHotkey);
         LostFocusCommand = new DelegateCommand(LostFocus);
         GotFocusCommand = new DelegateCommand(GotFocus);
+        LoadHotKeyCommand = new DelegateCommand(LoadHotKey);
 
         _windowService = windowService;
-        _directoryService = directoryService;
         _dataService = dataService;
 
         ImportHotkey = HotkeyText(Settings.Import);
@@ -113,6 +112,7 @@ public class SettingsDialogViewModel : ViewModelBase
     public ICommand SetPrevHotkeyCommand { get; set; }
     public ICommand GotFocusCommand { get; set; }
     public ICommand LostFocusCommand { get; set; }
+    public ICommand LoadHotKeyCommand { get; set; }
 
     private void SetImportHotkey(object obj)
     {
@@ -187,6 +187,13 @@ public class SettingsDialogViewModel : ViewModelBase
                 _ => throw new NotImplementedException()
             }; ;
         }
+    }
+    private void LoadHotKey(object obj)
+    {
+        ImportHotkey = HotkeyText(Settings.Import);
+        LoadHotkey = HotkeyText(Settings.Load);
+        PrevHotkey = HotkeyText(Settings.Prev);
+        NextHotkey = HotkeyText(Settings.Next);
     }
 
     internal static string HotkeyText(Hotkey hotkey)

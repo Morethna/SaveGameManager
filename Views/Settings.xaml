@@ -11,6 +11,11 @@
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen"
         ui:WindowHelper.UseModernWindowStyle="True">
+  <b:Interaction.Triggers>
+    <b:EventTrigger EventName="Loaded">
+      <b:InvokeCommandAction Command="{Binding LoadHotKeyCommand}"/>
+    </b:EventTrigger>
+  </b:Interaction.Triggers>
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="140"/>
