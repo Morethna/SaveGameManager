@@ -11,8 +11,8 @@
         ResizeMode="NoResize" SizeToContent="Width" Height="150" MaxWidth="500"
         ui:WindowHelper.UseModernWindowStyle="True">
   <b:Interaction.Triggers>
-    <b:EventTrigger EventName="Loaded">
-      <b:InvokeCommandAction Command="{Binding LoadCommand}"/>
+    <b:EventTrigger EventName="GotFocus">
+      <b:InvokeCommandAction Command="{Binding FocusCommand}"/>
     </b:EventTrigger>
   </b:Interaction.Triggers>
   <Window.Resources>
@@ -64,7 +64,7 @@
               Foreground="White"
              Width="60" Height="27"
              FontSize="12"
-             Command="{Binding SetResultCommand, UpdateSourceTrigger=PropertyChanged}">
+             Command="{Binding OkResultCommand, UpdateSourceTrigger=PropertyChanged}">
         <Button.Resources>
           <Style TargetType="Border">
             <Setter Property="CornerRadius" Value="5"/>

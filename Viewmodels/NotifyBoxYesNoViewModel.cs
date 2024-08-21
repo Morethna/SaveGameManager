@@ -14,11 +14,11 @@ public class NotifyBoxYesNoViewModel : ViewModelBase
     public NotifyBoxYesNoViewModel(IWindowService windowService)
     {
         _windowService = windowService;
-        SetResultCommand = new DelegateCommand(SetResult);
-        LoadCommand = new DelegateCommand(ResetResult);
+        OkResultCommand = new DelegateCommand(OkResult);
+        FocusCommand = new DelegateCommand(ResetResult);
     }
-    public ICommand SetResultCommand { get; set; }
-    public ICommand LoadCommand { get; set; }
+    public ICommand OkResultCommand { get; set; }
+    public ICommand FocusCommand { get; set; }
 
     public bool Result { get; private set; } = false;
     public string Title
@@ -45,7 +45,7 @@ public class NotifyBoxYesNoViewModel : ViewModelBase
     }
     private void ResetResult(object obj) => Result = false;
 
-    private void SetResult(object obj)
+    private void OkResult(object obj)
     {
         Result = true;
         _windowService.CloseWindow(this);

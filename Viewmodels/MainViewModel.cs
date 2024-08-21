@@ -205,7 +205,10 @@ public class MainViewModel : ViewModelBase
         _windowService.OpenWindowDialog(_textDialog, this);
 
         if (!string.IsNullOrEmpty(_textDialog.Name) && _textDialog.Ok)
+        {
             _directoryService.RenameSaveGameFolder(SelectedSaveGame, _textDialog.Name);
+            Sort(null);
+        }
 
     }
     private void OpenProfileDialog(object obj)
@@ -225,7 +228,7 @@ public class MainViewModel : ViewModelBase
         if (key.Key == Key.Delete)
             DeleteSaveGame(null);
     }
-    private void Sort(object obj)
+    private void Sort(object? obj)
     {
         if (SelectedProfile is not null)
             SelectedProfile.SaveGames = new ObservableCollection<Savegame>(_directoryService.SortSavegames(SelectedProfile.SaveGames));
