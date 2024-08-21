@@ -17,7 +17,6 @@
 	<Version>2.0.0.2</Version>
 	<Authors>Morethna</Authors>
   </PropertyGroup>
-
   <ItemGroup>
 	<None Remove="Resources\background.jpg" />
 	<None Remove="Resources\bleistift.png" />
@@ -37,6 +36,7 @@
 	<None Remove="Resources\sort-icon.png" />
 	<None Remove="Resources\Twitch.png" />
 	<None Remove="Resources\ytub_icon.png" />
+	<None Remove="Resources\Lies-of-P-Background.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,7 +62,7 @@
 	<Resource Include="Resources\d 112.png" />
 	<Resource Include="Resources\datei-offnen.png" />
 	<Resource Include="Resources\discord.png" />
-	<Resource Include="Resources\lies-of-p-4k-9c.jpg" />
+	<Resource Include="Resources\Lies-of-P-Background.jpg" />
 	<Resource Include="Resources\Lies-of-P-Red-Fox.png" />
 	<Resource Include="Resources\loschen.png" />
 	<Resource Include="Resources\P.ico" />

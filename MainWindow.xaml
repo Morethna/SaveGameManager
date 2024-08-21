@@ -53,12 +53,12 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="40"/>
     </Grid.RowDefinitions>
-    <Image Source="/Resources/lies-of-p-4k-9c.jpg"
+    <Image Source="/Resources/Lies-of-P-Background.jpg"
            Stretch="UniformToFill"
            Grid.RowSpan="4"
            Grid.ColumnSpan="3">
       <Image.Effect>
-        <BlurEffect RenderingBias="Quality" KernelType="Gaussian" Radius="6"/>
+        <BlurEffect RenderingBias="Performance" KernelType="Gaussian" Radius="2"/>
       </Image.Effect>
     </Image>
     <Button x:Name="btSettings" 
